@@ -1,0 +1,196 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-conex-blue: #004B8D;
+  --color-conex-indigo: #334195;
+  --color-conex-neon: #A1D900;
+  --color-conex-neon-bright: #B0E600;
+  --color-conex-dark: #1A1A1A;
+  --color-conex-surface: #F9F9F9;
+  
+  --font-heading: 'Montserrat', sans-serif;
+  --font-sans: 'Inter', Arial, sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: #F9F9F9;
+    color: #1A1A1A;
+    font-family: 'Inter', Arial, sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* ==========================================================================
+   TEMA ESCURO TOTAL E ROBUSTO (DARK MODE ENGINE)
+   Garante contraste máximo, legibilidade de 100% e elimina fundos cinzas lavados
+   ========================================================================== */
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body,
+body.dark {
+  background-color: #0D1117 !important;
+  color: #F0F6FC !important;
+}
+
+/* 1. Superfícies Principais e Cards em Modo Escuro */
+html.dark .bg-white,
+html.dark [class*="bg-white"] {
+  background-color: #161B22 !important;
+  border-color: #30363D !important;
+  color: #F0F6FC !important;
+}
+
+/* 2. Sub-cards, Listas, Linhas e Blocos Internos (Elimina o cinza lavado) */
+html.dark [class*="bg-slate-50"],
+html.dark [class*="bg-slate-100"] {
+  background-color: #1E252E !important;
+  border-color: #30363D !important;
+  color: #F0F6FC !important;
+}
+
+html.dark [class*="bg-slate-200"] {
+  background-color: #26303B !important;
+  border-color: #30363D !important;
+  color: #F0F6FC !important;
+}
+
+html.dark [class*="hover:bg-slate-50"]:hover,
+html.dark [class*="hover:bg-slate-100"]:hover {
+  background-color: #252D37 !important;
+}
+
+/* 3. Textos em Modo Escuro com Alto Contraste */
+html.dark .text-slate-900,
+html.dark .text-slate-800,
+html.dark .text-\[\#1A1A1A\],
+html.dark [class*="text-slate-900"],
+html.dark [class*="text-slate-800"] {
+  color: #FFFFFF !important;
+}
+
+html.dark .text-slate-700,
+html.dark .text-slate-600,
+html.dark [class*="text-slate-700"],
+html.dark [class*="text-slate-600"] {
+  color: #E2E8F0 !important; /* Branco suave de altíssimo contraste */
+}
+
+html.dark .text-slate-500,
+html.dark [class*="text-slate-500"] {
+  color: #CBD5E1 !important; /* Cinza claro bem legível */
+}
+
+html.dark .text-slate-400,
+html.dark [class*="text-slate-400"] {
+  color: #94A3B8 !important;
+}
+
+/* 4. Bordas e Divisores */
+html.dark [class*="border-slate-100"],
+html.dark [class*="border-slate-200"],
+html.dark [class*="border-slate-300"] {
+  border-color: #30363D !important;
+}
+
+/* 5. Inputs, Textareas, Selects e Modais */
+html.dark input,
+html.dark textarea,
+html.dark select {
+  background-color: #0D1117 !important;
+  border-color: #30363D !important;
+  color: #FFFFFF !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #6E7681 !important;
+}
+
+/* 6. Badges e Tags Coloridas em Modo Escuro (Alto Contraste) */
+html.dark .bg-emerald-50,
+html.dark .bg-emerald-100,
+html.dark [class*="bg-emerald-50"],
+html.dark [class*="bg-emerald-100"] {
+  background-color: rgba(16, 185, 129, 0.18) !important;
+  color: #6EE7B7 !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+html.dark .bg-blue-50,
+html.dark .bg-blue-100,
+html.dark [class*="bg-blue-50"],
+html.dark [class*="bg-blue-100"] {
+  background-color: rgba(59, 130, 246, 0.18) !important;
+  color: #93C5FD !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
+}
+
+html.dark .bg-amber-50,
+html.dark .bg-amber-100,
+html.dark [class*="bg-amber-50"],
+html.dark [class*="bg-amber-100"] {
+  background-color: rgba(245, 158, 11, 0.18) !important;
+  color: #FDE68A !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+html.dark .bg-purple-50,
+html.dark .bg-purple-100,
+html.dark [class*="bg-purple-50"],
+html.dark [class*="bg-purple-100"] {
+  background-color: rgba(168, 85, 247, 0.18) !important;
+  color: #D8B4FE !important;
+  border-color: rgba(168, 85, 247, 0.35) !important;
+}
+
+html.dark .bg-rose-50,
+html.dark .bg-rose-100,
+html.dark [class*="bg-rose-50"],
+html.dark [class*="bg-rose-100"] {
+  background-color: rgba(244, 63, 94, 0.18) !important;
+  color: #FDA4AF !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+}
+
+/* 7. Botões Secundários em Modo Escuro */
+html.dark button.bg-white,
+html.dark .bg-white button {
+  border-color: #30363D !important;
+}
+
+/* Utilitários Oficiais Co.Nexo */
+.btn-conex-primary {
+  background-color: #004B8D;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.2s ease-in-out;
+}
+.btn-conex-primary:hover {
+  background-color: #334195;
+}
+
+.btn-conex-neon {
+  background-color: #A1D900;
+  color: #1A1A1A;
+  border-radius: 9999px;
+  font-weight: 800;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.2s ease-in-out;
+}
+.btn-conex-neon:hover {
+  background-color: #B0E600;
+  transform: translateY(-1px);
+}
