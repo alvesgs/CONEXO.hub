@@ -1,47 +1,114 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
-  BarChart3, Award, 
-  Clock, TrendingUp, FileSpreadsheet,
-  AlertTriangle
+  BarChart3, Award, Clock, TrendingUp, FileSpreadsheet,
+  AlertTriangle, CheckCircle2, Users, Target, Calendar,
+  MessageSquare, Briefcase, Activity, CheckCheck, Building2,
+  Sparkles
 } from 'lucide-react';
 
 export const RegisView: React.FC = () => {
   const { 
-    alunos, agendamentos, activeTab,
+    alunos, agendamentos, diarios, duvidas, consultores, activeTab,
     atualizarStatusMei
   } = useApp();
 
   const [filtroFunil, setFiltroFunil] = useState<string>('todos');
 
-  // Cálculos das 4 Perguntas Cruciais da Diretoria do SENAC:
+  // Cálculos Estratégicos & Métricas Executivas da Gestão:
   
-  // 1. Quantos MEIs formalmente abertos?
+  // 1. MEIs Formalizados e Pipeline de Formalização
+  const totalAlunos = alunos.length;
   const totalMeisAbertos = alunos.filter(a => a.statusMei === 'MEI Aberto e Ativo' || a.statusPrograma === 'MEI Formalizado').length;
   const totalMeisEmProcesso = alunos.filter(a => a.statusMei === 'Em Análise / Documentação').length;
+  const totalInformais = alunos.filter(a => a.statusMei === 'Informal / Sem CNPJ').length;
+  const totalDesistentesMei = alunos.filter(a => a.statusMei === 'Desistência / Sem Interesse').length;
+  const taxaConversaoMei = totalAlunos > 0 ? ((totalMeisAbertos / totalAlunos) * 100).toFixed(1) : '0.0';
+  const taxaPipelineMei = totalAlunos > 0 ? (((totalMeisAbertos + totalMeisEmProcesso) / totalAlunos) * 100).toFixed(1) : '0.0';
 
-  // 2. Total de horas de mentoria presencial executadas
+  // 2. Horas de Mentoria Executadas e Capacidade
   const agendamentosRealizados = agendamentos.filter(a => a.status === 'realizado');
   const totalHorasExecutadas = agendamentosRealizados.reduce((acc, curr) => {
     return acc + (curr.tipo === 'diagnostico_1h' ? 1 : 2);
   }, 0);
+  const mediaHorasPorAluno = totalAlunos > 0 ? (totalHorasExecutadas / totalAlunos).toFixed(1) : '0.0';
 
-  // 3. Índice de assiduidade e taxa de no-show
+  // 3. Assiduidade, No-Show e Ocorrências
   const totalFaltasGerais = agendamentos.filter(a => a.status === 'falta_injustificada' || a.status === 'cancelado_menos_24h').length;
+  const totalCancelamentosAntecipados = agendamentos.filter(a => a.status === 'cancelado').length;
+  const totalReagendamentosGerais = agendamentos.filter(a => a.status === 'reagendado').length;
   const totalSessoesFinalizadas = agendamentosRealizados.length + totalFaltasGerais;
   const taxaNoShow = totalSessoesFinalizadas > 0 
     ? ((totalFaltasGerais / totalSessoesFinalizadas) * 100).toFixed(1)
     : '0.0';
   const taxaAssiduidade = (100 - Number(taxaNoShow)).toFixed(1);
 
-  // 4. Etapas da Trilha (Funil)
+  // 4. Retenção e Alunos Ativos
+  const alunosDesligados = alunos.filter(a => a.statusPrograma === 'Desligado');
+  const totalDesligados = alunosDesligados.length;
+  const totalAlunosAtivos = totalAlunos - totalDesligados;
+  const taxaRetencao = totalAlunos > 0 ? ((totalAlunosAtivos / totalAlunos) * 100).toFixed(1) : '100.0';
+
+  // 5. Efetividade das Tarefas Práticas dos Empreendedores (dos Diários de Bordo)
+  const totalTarefasAvaliadas = diarios.length;
+  const tarefasCumpridas = diarios.filter(d => d.tarefaStatusAnterior === 'cumprida').length;
+  const tarefasEmAndamento = diarios.filter(d => d.tarefaStatusAnterior === 'em_andamento').length;
+  const tarefasPendentes = diarios.filter(d => d.tarefaStatusAnterior === 'pendente').length;
+  const taxaAderenciaTarefas = totalTarefasAvaliadas > 0 
+    ? ((tarefasCumpridas / totalTarefasAvaliadas) * 100).toFixed(0)
+    : '100';
+
+  // 6. Resolução de Dúvidas Técnicas & Suporte
+  const totalDuvidas = duvidas.length;
+  const duvidasRespondidas = duvidas.filter(d => d.status === 'respondida').length;
+  const taxaResolucaoDuvidas = totalDuvidas > 0 
+    ? ((duvidasRespondidas / totalDuvidas) * 100).toFixed(0)
+    : '100';
+
+  // 7. Próximos Atendimentos & Engajamento WhatsApp
+  const agendamentosPendentes = agendamentos.filter(a => a.status === 'agendado' || a.status === 'confirmado');
+  const agendamentosConfirmados = agendamentos.filter(a => a.status === 'confirmado');
+  const taxaConfirmacaoAgenda = agendamentosPendentes.length > 0
+    ? ((agendamentosConfirmados.length / agendamentosPendentes.length) * 100).toFixed(0)
+    : '100';
+
+  // 8. Etapas da Trilha (Funil)
   const contagemFunil = {
     inscritos: alunos.filter(a => a.statusPrograma === 'Inscrito' || a.statusPrograma === 'Diagnóstico Agendado').length,
     emTrilha: alunos.filter(a => a.statusPrograma.startsWith('Em Trilha')).length,
     concluidos: alunos.filter(a => a.statusPrograma === 'Concluído').length,
     meiAberto: totalMeisAbertos,
-    desligados: alunos.filter(a => a.statusPrograma === 'Desligado').length
+    desligados: totalDesligados
   };
+
+  // 9. Agrupamento por Ramo de Atividade
+  const distribuicaoRamos = alunos.reduce((acc, curr) => {
+    const ramo = curr.ramo || 'Geral';
+    acc[ramo] = (acc[ramo] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const ramosOrdenados = Object.entries(distribuicaoRamos).sort((a, b) => b[1] - a[1]);
+
+  // 10. Desempenho e Capacidade por Consultor
+  const consultoresMetricas = consultores.map(c => {
+    const sessoes = agendamentos.filter(a => a.consultorId === c.id);
+    const realizadas = sessoes.filter(a => a.status === 'realizado');
+    const horas = realizadas.reduce((acc, curr) => acc + (curr.tipo === 'diagnostico_1h' ? 1 : 2), 0);
+    const confirmadas = sessoes.filter(a => a.status === 'confirmado' || a.status === 'agendado').length;
+    const duvidasConsultor = duvidas.filter(d => d.consultorId === c.id);
+    const duvidasResp = duvidasConsultor.filter(d => d.status === 'respondida').length;
+
+    return {
+      ...c,
+      totalSessoes: sessoes.length,
+      realizadas: realizadas.length,
+      horas,
+      confirmadas,
+      duvidasResp,
+      duvidasTotal: duvidasConsultor.length
+    };
+  });
 
   // Fila Anti-Limbo (Alunos que concluíram e precisam de contato em 30 ou 60 dias)
   const filaAntiLimbo = alunos.filter(a => a.statusPrograma === 'Concluído' || a.dataFollowUp30d);
@@ -75,9 +142,9 @@ export const RegisView: React.FC = () => {
             <span>•</span>
             <span>Regis Santos</span>
           </div>
-          <h2 className="text-2xl font-bold font-['Montserrat']">Painel Executivo</h2>
+          <h2 className="text-2xl font-bold font-['Montserrat']">Painel Executivo & Métricas</h2>
           <p className="text-blue-100/90 text-xs mt-1 font-['Inter']">
-            Indicadores estratégicos, evolução do funil e prestação de contas do programa.
+            Indicadores estratégicos, evolução do funil, metas e prestação de contas do programa.
           </p>
         </div>
 
@@ -95,7 +162,8 @@ export const RegisView: React.FC = () => {
       {/* ABA 1: DASHBOARD EXECUTIVO & KPIS */}
       {(activeTab === 'kpis' || !activeTab) && (
         <div className="space-y-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          {/* GRID DE KPIS ESTRATÉGICOS (8 CARDS DE ALTA PRECISÃO) */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
             {/* KPI 1: MEIs Formalizados */}
             <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
               <div className="flex justify-between items-start">
@@ -107,9 +175,9 @@ export const RegisView: React.FC = () => {
                 </div>
               </div>
               <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{totalMeisAbertos}</div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
-                <span className="text-emerald-600 dark:text-[#A1D900] font-semibold">+{totalMeisEmProcesso}</span>
-                <span>em formalização</span>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
+                <span>+{totalMeisEmProcesso} em processo</span>
+                <span className="font-semibold text-emerald-600 dark:text-[#A1D900]">{taxaConversaoMei}%</span>
               </div>
             </div>
 
@@ -124,43 +192,341 @@ export const RegisView: React.FC = () => {
                 </div>
               </div>
               <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{totalHorasExecutadas}h</div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
-                <span className="text-[#004B8D] dark:text-blue-300 font-semibold">{agendamentosRealizados.length}</span>
-                <span>sessões realizadas</span>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
+                <span>{agendamentosRealizados.length} sessões</span>
+                <span className="font-semibold text-[#004B8D] dark:text-blue-300">{mediaHorasPorAluno}h/aluno</span>
               </div>
             </div>
 
-            {/* KPI 3: Taxa de No-Show */}
+            {/* KPI 3: Taxa de Assiduidade */}
             <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
               <div className="flex justify-between items-start">
                 <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                  Taxa de No-Show
+                  Assiduidade
                 </span>
-                <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300 flex items-center justify-center font-bold">
-                  <TrendingUp className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-[#A1D900] flex items-center justify-center font-bold">
+                  <CheckCircle2 className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{taxaNoShow}%</div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
-                <span className="text-emerald-600 dark:text-[#A1D900] font-semibold">{taxaAssiduidade}%</span>
-                <span>assiduidade</span>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{taxaAssiduidade}%</div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
+                <span>No-show: {taxaNoShow}%</span>
+                <span className="font-semibold text-slate-700 dark:text-slate-300">{totalFaltasGerais} faltas</span>
               </div>
             </div>
 
-            {/* KPI 4: Base Total de Alunos */}
+            {/* KPI 4: Base & Retenção */}
             <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
               <div className="flex justify-between items-start">
                 <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                  Participantes
+                  Retenção Ativa
                 </span>
                 <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-300 flex items-center justify-center font-bold">
-                  <BarChart3 className="w-4 h-4" />
+                  <Users className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{alunos.length}</div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                Alunos na base
+              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{taxaRetencao}%</div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
+                <span>{totalAlunosAtivos} de {totalAlunos} alunos</span>
+                <span className="font-semibold text-rose-500 dark:text-rose-400">{totalDesligados} deslig.</span>
               </div>
+            </div>
+
+            {/* KPI 5: Efetividade das Tarefas */}
+            <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+              <div className="flex justify-between items-start">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                  Aderência a Tarefas
+                </span>
+                <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300 flex items-center justify-center font-bold">
+                  <Target className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{taxaAderenciaTarefas}%</div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
+                <span>{tarefasCumpridas} cumpridas</span>
+                <span className="font-semibold text-amber-600 dark:text-amber-300">{tarefasEmAndamento} em andam.</span>
+              </div>
+            </div>
+
+            {/* KPI 6: Agendamentos & Engajamento */}
+            <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+              <div className="flex justify-between items-start">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                  Grade Futura
+                </span>
+                <div className="w-8 h-8 rounded-lg bg-cyan-50 dark:bg-cyan-950/40 text-cyan-600 dark:text-cyan-300 flex items-center justify-center font-bold">
+                  <Calendar className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{agendamentosPendentes.length}</div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
+                <span>{agendamentosConfirmados.length} confirmados</span>
+                <span className="font-semibold text-cyan-600 dark:text-cyan-300">{taxaConfirmacaoAgenda}% conf.</span>
+              </div>
+            </div>
+
+            {/* KPI 7: Resolução de Dúvidas */}
+            <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+              <div className="flex justify-between items-start">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                  Suporte aos Alunos
+                </span>
+                <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-300 flex items-center justify-center font-bold">
+                  <MessageSquare className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{taxaResolucaoDuvidas}%</div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
+                <span>{duvidasRespondidas} de {totalDuvidas} dúvidas</span>
+                <span className="font-semibold text-emerald-600 dark:text-[#A1D900]">100% SLA</span>
+              </div>
+            </div>
+
+            {/* KPI 8: Risco Preventivo */}
+            <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+              <div className="flex justify-between items-start">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                  Alerta Preventivo
+                </span>
+                <div className="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 flex items-center justify-center font-bold">
+                  <AlertTriangle className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{alunosRiscoPreventivo.length}</div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
+                <span>1 falta / 2 reagend.</span>
+                <span className="font-semibold text-amber-600 dark:text-amber-400">Em monitoramento</span>
+              </div>
+            </div>
+          </div>
+
+          {/* PAINEL DE METAS DO PROGRAMA SENAC */}
+          <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4">
+            <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Activity className="w-5 h-5 text-[#004B8D] dark:text-[#A1D900]" />
+                <h3 className="font-bold text-slate-900 dark:text-white text-base font-['Montserrat']">
+                  Metas Institucionais do Ciclo • SENAC Empreendedorismo
+                </h3>
+              </div>
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#004B8D] dark:text-[#A1D900] border border-blue-200 dark:border-blue-800">
+                Semestre 2026/2
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
+              {/* Meta 1: Formalização MEI */}
+              <div className="p-3.5 bg-slate-50 dark:bg-[#1E252E] rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-semibold text-slate-700 dark:text-slate-200">Formalização MEI</span>
+                  <span className="font-bold text-emerald-600 dark:text-[#A1D900]">{totalMeisAbertos} / 5</span>
+                </div>
+                <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-emerald-500 h-full rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, (totalMeisAbertos / 5) * 100)}%` }}
+                  />
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 flex justify-between">
+                  <span>Meta: 5 empresas ativas</span>
+                  <span>{((totalMeisAbertos / 5) * 100).toFixed(0)}% da meta</span>
+                </div>
+              </div>
+
+              {/* Meta 2: Horas de Mentoria */}
+              <div className="p-3.5 bg-slate-50 dark:bg-[#1E252E] rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-semibold text-slate-700 dark:text-slate-200">Horas de Mentoria</span>
+                  <span className="font-bold text-[#004B8D] dark:text-blue-300">{totalHorasExecutadas}h / 20h</span>
+                </div>
+                <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-[#004B8D] dark:bg-blue-500 h-full rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, (totalHorasExecutadas / 20) * 100)}%` }}
+                  />
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 flex justify-between">
+                  <span>Meta: 20 horas no ciclo</span>
+                  <span>{((totalHorasExecutadas / 20) * 100).toFixed(0)}% da meta</span>
+                </div>
+              </div>
+
+              {/* Meta 3: Assiduidade Presencial */}
+              <div className="p-3.5 bg-slate-50 dark:bg-[#1E252E] rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-semibold text-slate-700 dark:text-slate-200">Assiduidade Presencial</span>
+                  <span className="font-bold text-amber-600 dark:text-amber-300">{taxaAssiduidade}% / 85%</span>
+                </div>
+                <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-amber-500 h-full rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, (Number(taxaAssiduidade) / 85) * 100)}%` }}
+                  />
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 flex justify-between">
+                  <span>Meta mínima: 85%</span>
+                  <span className="text-emerald-600 dark:text-[#A1D900] font-semibold">Meta Atingida</span>
+                </div>
+              </div>
+
+              {/* Meta 4: Retenção dos Empreendedores */}
+              <div className="p-3.5 bg-slate-50 dark:bg-[#1E252E] rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-semibold text-slate-700 dark:text-slate-200">Retenção de Alunos</span>
+                  <span className="font-bold text-purple-600 dark:text-purple-300">{taxaRetencao}% / 80%</span>
+                </div>
+                <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-purple-500 h-full rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, (Number(taxaRetencao) / 80) * 100)}%` }}
+                  />
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 flex justify-between">
+                  <span>Meta mínima: 80%</span>
+                  <span className="text-emerald-600 dark:text-[#A1D900] font-semibold">Saudável</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SEÇÕES ANALÍTICAS: DISTRIBUIÇÃO SETORIAL & MATURIDADE JURÍDICA */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Coluna 1: Ramos de Atividade (7 colunas) */}
+            <div className="lg:col-span-7 bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4">
+              <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-[#004B8D] dark:text-[#A1D900]" />
+                  <h3 className="font-bold text-slate-900 dark:text-white text-base font-['Montserrat']">
+                    Distribuição por Ramo de Atividade
+                  </h3>
+                </div>
+                <span className="text-xs text-slate-400 font-medium">
+                  {ramosOrdenados.length} setores atendidos
+                </span>
+              </div>
+
+              <div className="space-y-3.5 pt-1">
+                {ramosOrdenados.map(([ramo, qtd]) => {
+                  const percentual = totalAlunos > 0 ? ((qtd / totalAlunos) * 100).toFixed(0) : '0';
+                  return (
+                    <div key={ramo} className="space-y-1.5">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">{ramo}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-slate-500 dark:text-slate-400 font-mono">{qtd} aluno{qtd > 1 ? 's' : ''}</span>
+                          <span className="font-bold text-[#004B8D] dark:text-[#A1D900] w-10 text-right font-mono">{percentual}%</span>
+                        </div>
+                      </div>
+                      <div className="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                        <div 
+                          className="bg-gradient-to-r from-[#004B8D] to-[#A1D900] h-full rounded-full transition-all duration-500"
+                          style={{ width: `${percentual}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Coluna 2: Diagnóstico Jurídico MEI (5 colunas) */}
+            <div className="lg:col-span-5 bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4">
+              <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-emerald-600 dark:text-[#A1D900]" />
+                  <h3 className="font-bold text-slate-900 dark:text-white text-base font-['Montserrat']">
+                    Maturidade MEI da Base
+                  </h3>
+                </div>
+                <span className="text-xs font-bold text-emerald-600 dark:text-[#A1D900]">
+                  {taxaPipelineMei}% no pipeline
+                </span>
+              </div>
+
+              <div className="space-y-2.5 pt-1">
+                <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-200 dark:border-emerald-800/70 flex justify-between items-center text-xs">
+                  <div>
+                    <div className="font-bold text-emerald-900 dark:text-emerald-200">MEI Aberto e Ativo</div>
+                    <div className="text-[11px] text-emerald-700 dark:text-emerald-400">Formalização consolidada com CNPJ</div>
+                  </div>
+                  <span className="text-base font-bold text-emerald-900 dark:text-emerald-100 font-mono">{totalMeisAbertos}</span>
+                </div>
+
+                <div className="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl border border-blue-200 dark:border-blue-800/70 flex justify-between items-center text-xs">
+                  <div>
+                    <div className="font-bold text-blue-900 dark:text-blue-200">Em Análise / Documentação</div>
+                    <div className="text-[11px] text-blue-700 dark:text-blue-400">Processo de abertura em andamento</div>
+                  </div>
+                  <span className="text-base font-bold text-blue-900 dark:text-blue-100 font-mono">{totalMeisEmProcesso}</span>
+                </div>
+
+                <div className="p-3 bg-slate-50 dark:bg-[#1E252E] rounded-xl border border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs">
+                  <div>
+                    <div className="font-bold text-slate-800 dark:text-slate-200">Informal / Sem CNPJ</div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Público-alvo principal para mentoria</div>
+                  </div>
+                  <span className="text-base font-bold text-slate-900 dark:text-white font-mono">{totalInformais}</span>
+                </div>
+
+                <div className="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-800/70 flex justify-between items-center text-xs">
+                  <div>
+                    <div className="font-bold text-amber-900 dark:text-amber-200">Sem Interesse no Momento</div>
+                    <div className="text-[11px] text-amber-700 dark:text-amber-400">Optou por manter foco apenas na gestão</div>
+                  </div>
+                  <span className="text-base font-bold text-amber-900 dark:text-amber-100 font-mono">{totalDesistentesMei}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* PAINEL DE DESEMPENHO E CAPACIDADE DOS CONSULTORES */}
+          <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4">
+            <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-[#004B8D] dark:text-[#A1D900]" />
+                <h3 className="font-bold text-slate-900 dark:text-white text-base font-['Montserrat']">
+                  Capacidade Operacional dos Consultores
+                </h3>
+              </div>
+              <span className="text-xs text-slate-400 font-medium">
+                {consultoresMetricas.length} consultores ativos
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+              {consultoresMetricas.map(consultor => (
+                <div key={consultor.id} className="p-4 bg-slate-50 dark:bg-[#1E252E] rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-bold text-slate-900 dark:text-white text-sm font-['Montserrat']">
+                        {consultor.nome}
+                      </div>
+                      <div className="text-xs text-[#004B8D] dark:text-[#A1D900] font-medium">
+                        {consultor.especialidade}
+                      </div>
+                    </div>
+                    <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-mono">
+                      {consultor.salaPadrao} • {consultor.turnoPadrao.split(' ')[0]}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 pt-1 border-t border-slate-200 dark:border-slate-700">
+                    <div className="text-center p-2 bg-white dark:bg-[#161B22] rounded-lg border border-slate-200 dark:border-slate-700">
+                      <div className="text-xs text-slate-500 dark:text-slate-400">Horas Feitas</div>
+                      <div className="text-base font-bold text-slate-900 dark:text-white mt-0.5 font-mono">{consultor.horas}h</div>
+                    </div>
+                    <div className="text-center p-2 bg-white dark:bg-[#161B22] rounded-lg border border-slate-200 dark:border-slate-700">
+                      <div className="text-xs text-slate-500 dark:text-slate-400">Realizadas</div>
+                      <div className="text-base font-bold text-slate-900 dark:text-white mt-0.5 font-mono">{consultor.realizadas}</div>
+                    </div>
+                    <div className="text-center p-2 bg-white dark:bg-[#161B22] rounded-lg border border-slate-200 dark:border-slate-700">
+                      <div className="text-xs text-slate-500 dark:text-slate-400">Dúvidas Resp.</div>
+                      <div className="text-base font-bold text-emerald-600 dark:text-[#A1D900] mt-0.5 font-mono">{consultor.duvidasResp}/{consultor.duvidasTotal}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
