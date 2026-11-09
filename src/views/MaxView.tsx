@@ -3,11 +3,12 @@ import { useApp } from '../context/AppContext';
 import { 
   Calendar, Clock, User, Phone, Check, AlertTriangle, 
   Send, UserPlus, Search, RefreshCw, XCircle, ShieldAlert,
-  ChevronRight, CalendarPlus, CheckCircle
+  ChevronRight, CalendarPlus, CheckCircle, CalendarDays, ListFilter
 } from 'lucide-react';
 import { TipoSessao } from '../types';
 import { formatarDataAgenda } from '../utils/dateUtils';
 import { SearchableSelect } from '../components/SearchableSelect';
+import { CalendarView } from '../components/CalendarView';
 
 const RAMOS_ATIVIDADE_OPCOES = [
   'Alimentação / Gastronomia',
@@ -63,6 +64,9 @@ export const MaxView: React.FC = () => {
   const [reagendarData, setReagendarData] = useState('2026-10-22');
   const [reagendarInicio, setReagendarInicio] = useState('13:00');
   const [reagendarFim, setReagendarFim] = useState('14:00');
+
+  // Modo de visualização da Grade de Atendimentos: Semana, Mês ou Tabela
+  const [modoVisualizacaoAgenda, setModoVisualizacaoAgenda] = useState<'semana' | 'mes' | 'tabela'>('semana');
 
   // Ajusta automaticamente fim de acordo com o tipo
   const handleTipoChange = (t: TipoSessao) => {
@@ -244,19 +248,81 @@ export const MaxView: React.FC = () => {
       {/* ABA 1: GRADE DE ATENDIMENTOS & PRESENÇA */}
       {activeTab === 'agenda' && (
         <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
-          <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-50/50 dark:bg-[#1E252E]">
+          <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 bg-slate-50/50 dark:bg-[#1E252E]">
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-sm font-['Montserrat']">Grade de Atendimentos</h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-slate-900 dark:text-white text-sm font-['Montserrat']">Grade de Atendimentos</h3>
+                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-300 bg-white dark:bg-[#161B22] px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+                  Turnos: 13h–17h (Aline) • 08h–12h (Regis)
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Cancelamento &lt; 24h contabiliza falta • Limite: 2 faltas ou 3 reagendamentos
               </p>
             </div>
-            <div className="text-[11px] font-medium text-slate-500 dark:text-slate-300 bg-white dark:bg-[#161B22] px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700">
-              Turnos: 13h–17h (Aline) • 08h–12h (Regis)
+
+            {/* Alternador de Visualização: Semana, Mês ou Tabela */}
+            <div className="flex items-center bg-slate-200/80 dark:bg-[#0D1117] p-1 rounded-xl border border-slate-300/60 dark:border-slate-700">
+              <button
+                type="button"
+                onClick={() => setModoVisualizacaoAgenda('semana')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  modoVisualizacaoAgenda === 'semana'
+                    ? 'bg-white dark:bg-[#161B22] text-[#004B8D] dark:text-[#A1D900] shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <CalendarDays className="w-3.5 h-3.5" />
+                <span>Semana</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setModoVisualizacaoAgenda('mes')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  modoVisualizacaoAgenda === 'mes'
+                    ? 'bg-white dark:bg-[#161B22] text-[#004B8D] dark:text-[#A1D900] shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Mês</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setModoVisualizacaoAgenda('tabela')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  modoVisualizacaoAgenda === 'tabela'
+                    ? 'bg-white dark:bg-[#161B22] text-[#004B8D] dark:text-[#A1D900] shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <ListFilter className="w-3.5 h-3.5" />
+                <span>Tabela</span>
+              </button>
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          {modoVisualizacaoAgenda !== 'tabela' ? (
+            <div className="p-4">
+              <CalendarView
+                agendamentos={agendamentos}
+                alunos={alunos}
+                consultores={consultores}
+                viewMode={modoVisualizacaoAgenda}
+                onViewModeChange={setModoVisualizacaoAgenda}
+                onMarcarPresenca={marcarPresenca}
+                onReagendar={(id, dataAtual) => {
+                  setReagendandoAgId(id);
+                  setReagendarData(dataAtual);
+                }}
+                onNovoAgendamentoParaData={(dataEscolhida) => {
+                  setNovaData(dataEscolhida);
+                  setShowModalAgendamento(true);
+                }}
+              />
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-slate-100/70 dark:bg-[#1E252E] text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider font-semibold border-b border-slate-200 dark:border-slate-800">
                 <tr>
@@ -413,8 +479,9 @@ export const MaxView: React.FC = () => {
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+    )}
 
       {/* ABA 2: CENTRAL DE LEMBRETES 24H (WHATSAPP) */}
       {activeTab === 'lembretes' && (
