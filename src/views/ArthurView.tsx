@@ -299,7 +299,7 @@ export const ArthurView: React.FC = () => {
           >
             {alunos.map(aluno => (
               <option key={aluno.id} value={aluno.id}>
-                {aluno.nome} — {aluno.negocio}
+                {aluno.nome} — {aluno.negocio} ({aluno.statusPrograma})
               </option>
             ))}
           </select>

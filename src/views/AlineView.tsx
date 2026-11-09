@@ -86,6 +86,41 @@ export const AlineView: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Campo Select de Alunos para Navegação Rápida no Perfil */}
+      <div className="bg-white dark:bg-[#161B22] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#004B8D] dark:text-[#A1D900] flex items-center justify-center shrink-0">
+            <User className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-slate-900 dark:text-white font-['Montserrat']">
+              Selecionar Empreendedor(a) / Aluno(a)
+            </div>
+            <div className="text-xs text-slate-500 dark:text-slate-400">
+              Alterne entre os participantes para visualizar histórico, prontuário e evolução
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <label htmlFor="select-aluno-mentor" className="text-xs font-semibold text-slate-600 dark:text-slate-300 shrink-0 font-['Montserrat']">
+            Aluno:
+          </label>
+          <select
+            id="select-aluno-mentor"
+            value={alunoAtual?.id}
+            onChange={(e) => setSelectedAlunoId(e.target.value)}
+            className="w-full sm:w-80 bg-slate-50 dark:bg-[#0D1117] border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#004B8D] dark:focus:ring-[#A1D900] cursor-pointer shadow-2xs"
+          >
+            {alunos.map(aluno => (
+              <option key={aluno.id} value={aluno.id}>
+                {aluno.nome} — {aluno.negocio} ({aluno.statusPrograma})
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       {/* Banner de Identificação da Consultora */}
       <div className="bg-[#004B8D] rounded-2xl p-6 text-white shadow-sm border-b-4 border-[#A1D900] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -112,9 +147,24 @@ export const AlineView: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Seletor Lateral de Empreendedor */}
           <div className="lg:col-span-4 space-y-3">
-            <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-['Montserrat']">
-              Selecionar Empreendedor
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-['Montserrat']">
+                Selecionar Empreendedor
+              </h3>
+            </div>
+
+            {/* Campo Select de Alunos */}
+            <select
+              value={alunoAtual?.id}
+              onChange={(e) => setSelectedAlunoId(e.target.value)}
+              className="w-full bg-slate-50 dark:bg-[#0D1117] border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#004B8D] dark:focus:ring-[#A1D900] cursor-pointer shadow-2xs"
+            >
+              {alunos.map(aluno => (
+                <option key={aluno.id} value={aluno.id}>
+                  {aluno.nome} — {aluno.negocio}
+                </option>
+              ))}
+            </select>
             <div className="space-y-2">
               {alunos.map(aluno => {
                 const isSelected = aluno.id === alunoAtual?.id;
