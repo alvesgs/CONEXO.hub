@@ -4,7 +4,7 @@ import {
   Calendar as CalendarIcon, Clock, CheckCircle2, 
   MessageCircle, BookOpen, Send, MapPin, 
   FileCheck, ExternalLink, ChevronRight, ChevronLeft, Check,
-  CalendarSync, XCircle, AlertTriangle, X
+  CalendarSync, XCircle, AlertTriangle, X, User
 } from 'lucide-react';
 import { formatarDataAgenda, calcularPrazoCancelamento } from '../utils/dateUtils';
 
@@ -72,22 +72,23 @@ const DIAS_DISPONIVEIS: DiaAgenda[] = [
 
 export const ArthurView: React.FC = () => {
   const { 
-    alunos, agendamentos, duvidas, materiais, 
+    alunos, agendamentos, duvidas, materiais, diarios,
     marcarPresenca, agendarSessao, reagendarSessao, cancelarSessao,
-    enviarDuvida, consultores, activeTab, setAlertaGlobal 
+    enviarDuvida, consultores, activeTab, setAlertaGlobal,
+    selectedAlunoId, setSelectedAlunoId
   } = useApp();
 
-  // Arthur é o aluno a1
-  const arthur = alunos.find(a => a.id === 'a1') || alunos[0];
+  // Empreendedor(a) atualmente selecionado(a)
+  const alunoAtivo = alunos.find(a => a.id === selectedAlunoId) || alunos[0];
   const proximoAgendamento = agendamentos.find(
-    ag => ag.alunoId === arthur.id && (ag.status === 'agendado' || ag.status === 'confirmado')
+    ag => ag.alunoId === alunoAtivo.id && (ag.status === 'agendado' || ag.status === 'confirmado')
   );
   const consultora = consultores.find(c => c.id === proximoAgendamento?.consultorId) || consultores[0];
-  const minhasDuvidas = duvidas.filter(d => d.alunoId === arthur.id);
+  const minhasDuvidas = duvidas.filter(d => d.alunoId === alunoAtivo.id);
 
   // Regra de Cancelamento e Limite
   const LIMITE_CANCELAMENTOS = 2;
-  const cancelamentosRealizados = arthur.totalCancelamentos || 0;
+  const cancelamentosRealizados = alunoAtivo.totalCancelamentos || 0;
   const atingiuLimiteCancelamento = cancelamentosRealizados >= LIMITE_CANCELAMENTOS;
 
   // Sistema de Notificação Dinâmica (Aparece e Desaparece após ser Notificado)
@@ -146,7 +147,7 @@ export const ArthurView: React.FC = () => {
   const handleEnviarDuvida = (e: React.FormEvent) => {
     e.preventDefault();
     if (!novaPergunta) return;
-    enviarDuvida(novaPergunta, arthur.id, 'c1');
+    enviarDuvida(novaPergunta, alunoAtivo.id, 'c1');
     setNovaPergunta('');
     setNotificacaoAtiva({
       id: `notif_${Date.now()}`,
@@ -165,14 +166,14 @@ export const ArthurView: React.FC = () => {
 
     const [hInicio, hFim] = slotSelecionado.split(' às ');
     const res = agendarSessao({
-      alunoId: arthur.id,
+      alunoId: alunoAtivo.id,
       consultorId: 'c1', // Aline
       tipo: 'mentoria_2h',
       data: dataSelecionada,
       horarioInicio: hInicio.trim(),
       horarioFim: hFim.trim(),
       sala: 'Sala 204 - Bloco Empreendedorismo',
-      observacoes: 'Agendado pelo próprio mentorado no Portal Co.Nexo.'
+      observacoes: `Agendado pelo próprio mentorado (${alunoAtivo.nome}) no Portal Co.Nexo.`
     });
 
     if (res.success) {
@@ -216,7 +217,7 @@ export const ArthurView: React.FC = () => {
         id: `notif_${Date.now()}`,
         tipo: 'sucesso',
         titulo: 'Encontro Reagendado!',
-        mensagem: `Novo horário marcado para ${dataInfo.dia} de ${dataInfo.mes} às ${hInicio}. Você utilizou ${arthur.totalReagendamentos + 1} de 3 reagendamentos permitidos.`
+        mensagem: `Novo horário marcado para ${dataInfo.dia} de ${dataInfo.mes} às ${hInicio}. Você utilizou ${alunoAtivo.totalReagendamentos + 1} de 3 reagendamentos permitidos.`
       });
       setAlertaGlobal(`✅ Encontro reagendado para ${dataInfo.dia} de ${dataInfo.mes} às ${hInicio}!`);
     } else {
@@ -249,7 +250,7 @@ export const ArthurView: React.FC = () => {
         id: `notif_${Date.now()}`,
         tipo: 'alerta_falta',
         titulo: 'Notificação do Sistema: Falta Contabilizada',
-        mensagem: `Seu cancelamento foi efetuado fora do prazo (menos de 24h de antecedência). Conforme as normas do Co.Nexo SENAC, foi registrada 1 falta no seu histórico escolar (${arthur.totalFaltas + 1}/2 faltas permitidas).`
+        mensagem: `Seu cancelamento foi efetuado fora do prazo (menos de 24h de antecedência). Conforme as normas do Co.Nexo SENAC, foi registrada 1 falta no seu histórico escolar (${alunoAtivo.totalFaltas + 1}/2 faltas permitidas).`
       });
       setAlertaGlobal(`🚨 Cancelamento fora do prazo (<24h). 1 falta foi contabilizada no sistema.`);
     } else {
@@ -270,6 +271,41 @@ export const ArthurView: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Campo Select de Alunos para Navegação e Demonstração */}
+      <div className="bg-white dark:bg-[#161B22] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#004B8D] dark:text-[#A1D900] flex items-center justify-center shrink-0">
+            <User className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-slate-900 dark:text-white font-['Montserrat']">
+              Selecionar Aluno(a)
+            </div>
+            <div className="text-xs text-slate-500 dark:text-slate-400">
+              Alterne entre os participantes para visualizar os agendamentos e tarefas individuais
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <label htmlFor="select-aluno" className="text-xs font-semibold text-slate-600 dark:text-slate-300 shrink-0 font-['Montserrat']">
+            Aluno:
+          </label>
+          <select
+            id="select-aluno"
+            value={alunoAtivo.id}
+            onChange={(e) => setSelectedAlunoId(e.target.value)}
+            className="w-full sm:w-72 bg-slate-50 dark:bg-[#0D1117] border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#004B8D] dark:focus:ring-[#A1D900] cursor-pointer shadow-2xs"
+          >
+            {alunos.map(aluno => (
+              <option key={aluno.id} value={aluno.id}>
+                {aluno.nome} — {aluno.negocio}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       {/* 1. Banner Minimalista e Objetivo com Saldos de Cancelamentos e Reagendamentos */}
       <div className="bg-[#004B8D] rounded-2xl p-6 text-white shadow-md border-b-4 border-[#A1D900] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -277,12 +313,12 @@ export const ArthurView: React.FC = () => {
             Portal do Empreendedor • SENAC
           </span>
           <h1 className="text-2xl font-bold font-['Montserrat'] mt-0.5">
-            Olá, {arthur.nome}!
+            Olá, {alunoAtivo.nome}!
           </h1>
           
           <div className="flex items-center gap-2 mt-2.5 flex-wrap">
             <span className="inline-block px-2.5 py-0.5 rounded-full bg-blue-900/60 text-blue-200 text-xs font-medium border border-blue-400/30">
-              {arthur.negocio}
+              {alunoAtivo.negocio}
             </span>
 
             {/* Contador de Cancelamentos Realizados vs Permitidos */}
@@ -297,16 +333,16 @@ export const ArthurView: React.FC = () => {
             {/* Contador de Reagendamentos */}
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 text-white text-xs font-semibold border border-white/20">
               <span>Reagendamentos:</span>
-              <strong className={`font-mono ${arthur.totalReagendamentos >= 3 ? 'text-rose-300' : 'text-[#A1D900]'}`}>
-                {arthur.totalReagendamentos}/3
+              <strong className={`font-mono ${alunoAtivo.totalReagendamentos >= 3 ? 'text-rose-300' : 'text-[#A1D900]'}`}>
+                {alunoAtivo.totalReagendamentos}/3
               </strong>
             </span>
 
             {/* Faltas (se houver) */}
-            {arthur.totalFaltas > 0 && (
+            {alunoAtivo.totalFaltas > 0 && (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30 text-xs font-bold font-mono">
                 <AlertTriangle className="w-3 h-3 text-amber-300" />
-                <span>{arthur.totalFaltas}/2 faltas</span>
+                <span>{alunoAtivo.totalFaltas}/2 faltas</span>
               </span>
             )}
           </div>
@@ -314,8 +350,8 @@ export const ArthurView: React.FC = () => {
 
         <div className="bg-[#334195] border border-blue-400/30 rounded-xl px-4 py-2 text-left sm:text-right shrink-0">
           <div className="text-xs text-blue-200 font-medium">Etapa no Programa:</div>
-          <div className="text-sm font-bold text-white font-['Montserrat']">{arthur.statusPrograma}</div>
-          <div className="text-[11px] text-[#A1D900] font-semibold mt-0.5">{arthur.encontrosRealizados} de 5 encontros concluídos</div>
+          <div className="text-sm font-bold text-white font-['Montserrat']">{alunoAtivo.statusPrograma}</div>
+          <div className="text-[11px] text-[#A1D900] font-semibold mt-0.5">{alunoAtivo.encontrosRealizados} de 5 encontros concluídos</div>
         </div>
       </div>
 
@@ -471,24 +507,24 @@ export const ArthurView: React.FC = () => {
                   {/* Botão Reagendar Horário */}
                   <button
                     onClick={() => {
-                      if (arthur.totalReagendamentos >= 3) {
+                      if (alunoAtivo.totalReagendamentos >= 3) {
                         alert('🚫 Limite de 3 reagendamentos atingido no programa. Fale com a equipe do Co.Nexo.');
                         return;
                       }
                       setShowModalReagendar(true);
                     }}
-                    disabled={arthur.totalReagendamentos >= 3}
+                    disabled={alunoAtivo.totalReagendamentos >= 3}
                     className={`px-4 py-2 text-xs font-semibold rounded-full border transition-all flex items-center gap-1.5 cursor-pointer ${
-                      arthur.totalReagendamentos >= 3
+                      alunoAtivo.totalReagendamentos >= 3
                         ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700'
                         : 'border-[#004B8D]/30 dark:border-blue-500/40 text-[#004B8D] dark:text-blue-300 bg-blue-50/70 dark:bg-blue-950/40 hover:bg-[#004B8D] hover:text-white dark:hover:bg-blue-900/60'
                     }`}
-                    title={arthur.totalReagendamentos >= 3 ? 'Limite de 3 reagendamentos atingido' : 'Reagendar para outro horário'}
+                    title={alunoAtivo.totalReagendamentos >= 3 ? 'Limite de 3 reagendamentos atingido' : 'Reagendar para outro horário'}
                   >
                     <CalendarSync className="w-3.5 h-3.5" />
                     <span>Reagendar</span>
                     <span className="text-[10px] ml-0.5 px-1.5 py-0.5 rounded-full bg-white dark:bg-[#161B22] border border-blue-200 dark:border-blue-800 font-mono font-bold">
-                      {arthur.totalReagendamentos}/3
+                      {alunoAtivo.totalReagendamentos}/3
                     </span>
                   </button>
 
@@ -680,48 +716,70 @@ export const ArthurView: React.FC = () => {
       )}
 
       {/* 3. ABA 2: MINHAS TAREFAS */}
-      {activeTab === 'diario' && (
-        <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4">
-          <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
-            <h2 className="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2 font-['Montserrat']">
-              <FileCheck className="w-5 h-5 text-emerald-600" />
-              <span>Tarefas Combinadas com a Mentora Aline</span>
-            </h2>
-          </div>
+      {activeTab === 'diario' && (() => {
+        const diariosDoAluno = diarios.filter(d => d.alunoId === alunoAtivo.id);
+        const tarefasDoDiario = diariosDoAluno
+          .filter(d => d.tarefaProximoEncontro)
+          .map(d => d.tarefaProximoEncontro);
 
-          <div className="space-y-2.5">
-            {[
-              'Guardar os recibos e comprovantes de compras da feira num envelope',
-              'Não misturar as notas do almoço pessoal com as compras das marmitas',
-              'Trazer as dúvidas anotadas para o próximo encontro'
-            ].map((item, idx) => (
-              <label 
-                key={idx} 
-                className="flex items-center gap-3 p-3.5 bg-slate-50 dark:bg-[#1E252E] hover:bg-slate-100 dark:hover:bg-[#252D37] rounded-xl cursor-pointer text-xs text-slate-800 dark:text-slate-200 transition-colors border border-slate-200 dark:border-slate-700"
-              >
-                <input
-                  type="checkbox"
-                  checked={!!tarefasFeitas[idx]}
-                  onChange={() => toggleTarefa(idx)}
-                  className="w-4 h-4 rounded text-[#004B8D] focus:ring-[#004B8D] cursor-pointer"
-                />
-                <span className={tarefasFeitas[idx] ? 'line-through text-slate-400 font-normal' : 'font-semibold'}>
-                  {item}
-                </span>
-              </label>
-            ))}
+        const listaTarefas = tarefasDoDiario.length > 0 ? tarefasDoDiario : [
+          'Guardar os recibos e comprovantes de compras da semana num envelope',
+          'Não misturar as contas pessoais com as despesas do negócio',
+          'Trazer as dúvidas anotadas para a próxima mentoria'
+        ];
+
+        return (
+          <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4">
+            <div className="border-b border-slate-100 dark:border-slate-800 pb-3 flex justify-between items-center">
+              <div>
+                <h2 className="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2 font-['Montserrat']">
+                  <FileCheck className="w-5 h-5 text-emerald-600 dark:text-[#A1D900]" />
+                  <span>Tarefas Combinadas com a Mentora Aline</span>
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Atividades para o negócio de {alunoAtivo.nome}
+                </p>
+              </div>
+              <span className="text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-[#A1D900] px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                {listaTarefas.length} tarefa(s)
+              </span>
+            </div>
+
+            <div className="space-y-2.5">
+              {listaTarefas.map((item, idx) => (
+                <label 
+                  key={`${alunoAtivo.id}_${idx}`} 
+                  className="flex items-center gap-3 p-3.5 bg-slate-50 dark:bg-[#1E252E] hover:bg-slate-100 dark:hover:bg-[#252D37] rounded-xl cursor-pointer text-xs text-slate-800 dark:text-slate-200 transition-colors border border-slate-200 dark:border-slate-700"
+                >
+                  <input
+                    type="checkbox"
+                    checked={!!tarefasFeitas[`${alunoAtivo.id}_${idx}`]}
+                    onChange={() => setTarefasFeitas(prev => ({ ...prev, [`${alunoAtivo.id}_${idx}`]: !prev[`${alunoAtivo.id}_${idx}`] }))}
+                    className="w-4 h-4 rounded text-[#004B8D] focus:ring-[#004B8D] cursor-pointer"
+                  />
+                  <span className={tarefasFeitas[`${alunoAtivo.id}_${idx}`] ? 'line-through text-slate-400 font-normal' : 'font-semibold'}>
+                    {item}
+                  </span>
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* 4. ABA 3: DÚVIDAS */}
       {activeTab === 'duvidas' && (
         <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4">
-          <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
-            <h2 className="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2 font-['Montserrat']">
-              <MessageCircle className="w-5 h-5 text-[#004B8D] dark:text-[#A1D900]" />
-              <span>Tirar Dúvida com a Mentora Aline</span>
-            </h2>
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-3 flex justify-between items-center">
+            <div>
+              <h2 className="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2 font-['Montserrat']">
+                <MessageCircle className="w-5 h-5 text-[#004B8D] dark:text-[#A1D900]" />
+                <span>Tirar Dúvida com a Mentora Aline</span>
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Canal direto de suporte de {alunoAtivo.nome}
+              </p>
+            </div>
           </div>
 
           <form onSubmit={handleEnviarDuvida} className="space-y-3">
@@ -746,20 +804,26 @@ export const ArthurView: React.FC = () => {
 
           {/* Histórico Simplificado */}
           <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-            {minhasDuvidas.map(d => (
-              <div key={d.id} className="bg-slate-50 dark:bg-[#1E252E] p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs space-y-1.5">
-                <div className="text-slate-700 dark:text-slate-300 font-medium">Você: "{d.pergunta}"</div>
-                {d.resposta ? (
-                  <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 p-2.5 rounded-lg text-emerald-900 dark:text-emerald-200">
-                    <strong className="text-emerald-800 dark:text-emerald-300">Aline:</strong> {d.resposta}
-                  </div>
-                ) : (
-                  <span className="text-[11px] text-amber-700 dark:text-amber-300 font-medium">
-                    Aguardando resposta da mentora...
-                  </span>
-                )}
+            {minhasDuvidas.length === 0 ? (
+              <div className="text-center py-6 text-slate-400 text-xs">
+                Nenhuma dúvida registrada para {alunoAtivo.nome} até o momento.
               </div>
-            ))}
+            ) : (
+              minhasDuvidas.map(d => (
+                <div key={d.id} className="bg-slate-50 dark:bg-[#1E252E] p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs space-y-1.5">
+                  <div className="text-slate-700 dark:text-slate-300 font-medium">{alunoAtivo.nome}: "{d.pergunta}"</div>
+                  {d.resposta ? (
+                    <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 p-2.5 rounded-lg text-emerald-900 dark:text-emerald-200">
+                      <strong className="text-emerald-800 dark:text-emerald-300">Aline:</strong> {d.resposta}
+                    </div>
+                  ) : (
+                    <span className="text-[11px] text-amber-700 dark:text-amber-300 font-medium">
+                      Aguardando resposta da mentora...
+                    </span>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
@@ -831,7 +895,7 @@ export const ArthurView: React.FC = () => {
                 </span>
               </div>
               <span className="text-[11px] font-semibold text-blue-800 dark:text-[#A1D900] bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 px-2.5 py-1 rounded-lg font-mono">
-                Reagendamento {arthur.totalReagendamentos + 1} de 3
+                Reagendamento {alunoAtivo.totalReagendamentos + 1} de 3
               </span>
             </div>
 
@@ -1025,7 +1089,7 @@ export const ArthurView: React.FC = () => {
                 </p>
 
                 <div className="p-2.5 rounded-lg bg-rose-100/90 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-800 text-[11px] text-rose-900 dark:text-rose-200 font-medium">
-                  🚨 <strong>Aviso do Sistema:</strong> Este cancelamento será <strong>contabilizado como 1 falta</strong> no seu prontuário escolar ({arthur.totalFaltas + 1}/2 faltas registradas).
+                  🚨 <strong>Aviso do Sistema:</strong> Este cancelamento será <strong>contabilizado como 1 falta</strong> no seu prontuário escolar ({alunoAtivo.totalFaltas + 1}/2 faltas registradas).
                 </div>
               </div>
             ) : (
