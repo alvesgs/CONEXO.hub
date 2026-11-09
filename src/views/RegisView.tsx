@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
-  BarChart3, Download, CloudCheck, Award, 
+  BarChart3, Download, Award, 
   Clock, TrendingUp, FileSpreadsheet,
   Upload, Database, AlertTriangle
 } from 'lucide-react';
@@ -326,10 +326,6 @@ export const RegisView: React.FC = () => {
               <Database className="w-5 h-5 text-[#A1D900]" />
               <h3 className="font-bold text-white text-base font-['Montserrat']">Segurança e Backup de Dados</h3>
             </div>
-            <span className="text-[#A1D900] font-mono text-xs flex items-center gap-1.5">
-              <CloudCheck className="w-4 h-4" />
-              Banco Sincronizado
-            </span>
           </div>
 
           <p className="text-xs text-slate-300 max-w-3xl leading-relaxed">

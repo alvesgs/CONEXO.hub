@@ -234,7 +234,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     return { 
       success: true, 
-      message: `Agendamento criado com sucesso para ${aluno.nome}! Horário protegido em nuvem.` 
+      message: `Agendamento criado com sucesso para ${aluno.nome}!` 
     };
   };
 

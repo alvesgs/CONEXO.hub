@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { 
   UserCheck, Briefcase, GraduationCap, 
-  BarChart3, CloudCheck, RotateCcw, DownloadCloud, LogOut 
+  BarChart3, RotateCcw, DownloadCloud, LogOut 
 } from 'lucide-react';
 import { Role } from '../types';
 import { CoNexoLogo } from './CoNexoLogo';
@@ -43,11 +43,7 @@ export const Header: React.FC = () => {
           <span className="text-blue-200">•</span>
           <span className="text-blue-100 hidden sm:inline">Programa Oficial Co.Nexo</span>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 text-[#A1D900] font-semibold text-[11px]">
-            <CloudCheck className="w-3.5 h-3.5" />
-            <span>Nuvem Ativa</span>
-          </div>
+        <div className="flex items-center gap-3">
           <button 
             onClick={exportarBackupCloud}
             className="hover:text-[#A1D900] text-blue-100 flex items-center gap-1 cursor-pointer transition-colors text-[11px]"

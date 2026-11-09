@@ -7,7 +7,7 @@ import { MaxView } from './views/MaxView';
 import { AlineView } from './views/AlineView';
 import { ArthurView } from './views/ArthurView';
 import { RegisView } from './views/RegisView';
-import { CloudCheck, DownloadCloud, RotateCcw } from 'lucide-react';
+import { DownloadCloud, RotateCcw } from 'lucide-react';
 
 export const App: React.FC = () => {
   const { 
@@ -46,11 +46,7 @@ export const App: React.FC = () => {
             </span>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 text-emerald-600 dark:text-[#A1D900] font-semibold text-[11px]">
-              <CloudCheck className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Sincronizado na Nuvem</span>
-            </div>
+          <div className="flex items-center gap-3">
             <button 
               onClick={exportarBackupCloud}
               className="text-slate-500 hover:text-[#004B8D] dark:hover:text-[#A1D900] flex items-center gap-1 cursor-pointer transition-colors text-[11px]"
@@ -91,7 +87,7 @@ export const App: React.FC = () => {
               <span>SENAC São Paulo</span>
             </div>
             <div className="text-[11px] text-slate-400 dark:text-slate-500">
-              Ambiente com proteção ativa contra perda de dados
+              Portal de Gestão Integrada
             </div>
           </div>
         </footer>
