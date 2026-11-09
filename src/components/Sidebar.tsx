@@ -5,7 +5,7 @@ import {
   Calendar, MessageSquare, Users, BookOpen, 
   HelpCircle, FileText, ShieldCheck, FileCheck, 
   MessageCircle, BarChart3, TrendingUp, Clock, 
-  Database, LogOut, Sun, Moon, Pin, PinOff
+  LogOut, Sun, Moon, Pin, PinOff
 } from 'lucide-react';
 
 interface TabItem {
@@ -60,7 +60,6 @@ export const Sidebar: React.FC = () => {
       { id: 'kpis', label: 'Dashboard Executivo', icon: <BarChart3 className="w-5 h-5" /> },
       { id: 'funil', label: 'Funil do Programa', icon: <TrendingUp className="w-5 h-5" /> },
       { id: 'anti_limbo', label: 'Fila Anti-Limbo (30/60d)', icon: <Clock className="w-5 h-5" /> },
-      { id: 'auditoria', label: 'Auditoria & Backup', icon: <Database className="w-5 h-5" /> },
     ],
   };
 

@@ -2,13 +2,13 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { 
   UserCheck, Briefcase, GraduationCap, 
-  BarChart3, RotateCcw, DownloadCloud, LogOut 
+  BarChart3, LogOut 
 } from 'lucide-react';
 import { Role } from '../types';
 import { CoNexoLogo } from './CoNexoLogo';
 
 export const Header: React.FC = () => {
-  const { role, setRole, exportarBackupCloud, resetarDadosDemo } = useApp();
+  const { role, setRole } = useApp();
 
   // Nomes estritamente alinhados: Recepção, Mentor(a), Aluno(a) e Gestão
   const personas: { id: Role; label: string; icon: React.ReactNode }[] = [
@@ -42,24 +42,6 @@ export const Header: React.FC = () => {
           <span className="font-bold text-[#A1D900] tracking-wide font-['Montserrat']">SENAC EMPREENDEDORISMO</span>
           <span className="text-blue-200">•</span>
           <span className="text-blue-100 hidden sm:inline">Programa Oficial Co.Nexo</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={exportarBackupCloud}
-            className="hover:text-[#A1D900] text-blue-100 flex items-center gap-1 cursor-pointer transition-colors text-[11px]"
-            title="Baixar cópia de segurança em JSON"
-          >
-            <DownloadCloud className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Backup</span>
-          </button>
-          <button 
-            onClick={resetarDadosDemo}
-            className="hover:text-amber-300 text-blue-100 flex items-center gap-1 cursor-pointer transition-colors text-[11px]"
-            title="Recarregar dados de demonstração"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Reset Demo</span>
-          </button>
         </div>
       </div>
 

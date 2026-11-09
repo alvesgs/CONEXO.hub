@@ -7,14 +7,11 @@ import { MaxView } from './views/MaxView';
 import { AlineView } from './views/AlineView';
 import { ArthurView } from './views/ArthurView';
 import { RegisView } from './views/RegisView';
-import { DownloadCloud, RotateCcw } from 'lucide-react';
 
 export const App: React.FC = () => {
   const { 
     role, 
-    isSidebarCollapsed, 
-    exportarBackupCloud, 
-    resetarDadosDemo 
+    isSidebarCollapsed 
   } = useApp();
 
   // Primeira tela de acesso: Tela de Login e Escolha de Perfil
@@ -34,7 +31,7 @@ export const App: React.FC = () => {
 
       {/* Conteúdo Principal com espaço para a barra recolhida */}
       <div className="ml-20 flex flex-col min-h-screen">
-        {/* Barra Superior Discreta de Status e Ações Globais */}
+        {/* Barra Superior Discreta de Identificação Institucional */}
         <header className="sticky top-0 z-30 bg-white/80 dark:bg-[#161B22]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 py-2.5 flex justify-between items-center text-xs">
           <div className="flex items-center gap-2">
             <span className="font-bold text-[#004B8D] dark:text-[#A1D900] tracking-wide font-['Montserrat']">
@@ -44,25 +41,6 @@ export const App: React.FC = () => {
             <span className="text-slate-500 dark:text-slate-400 hidden sm:inline">
               Co.Nexo — Gestão Integrada de Mentorias
             </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={exportarBackupCloud}
-              className="text-slate-500 hover:text-[#004B8D] dark:hover:text-[#A1D900] flex items-center gap-1 cursor-pointer transition-colors text-[11px]"
-              title="Baixar cópia de segurança em JSON"
-            >
-              <DownloadCloud className="w-3.5 h-3.5" />
-              <span className="hidden lg:inline">Backup</span>
-            </button>
-            <button 
-              onClick={resetarDadosDemo}
-              className="text-slate-500 hover:text-amber-500 flex items-center gap-1 cursor-pointer transition-colors text-[11px]"
-              title="Recarregar dados iniciais"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden lg:inline">Reset Demo</span>
-            </button>
           </div>
         </header>
 

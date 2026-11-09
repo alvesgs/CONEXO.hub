@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
-  BarChart3, Download, Award, 
+  BarChart3, Award, 
   Clock, TrendingUp, FileSpreadsheet,
-  Upload, Database, AlertTriangle
+  AlertTriangle
 } from 'lucide-react';
 
 export const RegisView: React.FC = () => {
   const { 
     alunos, agendamentos, activeTab,
-    exportarBackupCloud, restaurarBackupCloud, atualizarStatusMei
+    atualizarStatusMei
   } = useApp();
 
   const [filtroFunil, setFiltroFunil] = useState<string>('todos');
@@ -65,19 +65,6 @@ export const RegisView: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleUploadBackup = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = event => {
-      const content = event.target?.result as string;
-      if (content) {
-        restaurarBackupCloud(content);
-      }
-    };
-    reader.readAsText(file);
-  };
-
   return (
     <div className="space-y-6">
       {/* Banner da Coordenação */}
@@ -101,13 +88,6 @@ export const RegisView: React.FC = () => {
           >
             <FileSpreadsheet className="w-4 h-4 text-[#1A1A1A]" />
             <span>Exportar CSV</span>
-          </button>
-          <button
-            onClick={exportarBackupCloud}
-            className="btn-conex-primary px-4 py-2 text-xs shadow-xs flex items-center gap-1.5 cursor-pointer border border-white/20"
-          >
-            <Download className="w-4 h-4 text-[#A1D900]" />
-            <span>Backup JSON</span>
           </button>
         </div>
       </div>
@@ -314,44 +294,6 @@ export const RegisView: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* ABA 4: AUDITORIA, BACKUP & NUVEM */}
-      {activeTab === 'auditoria' && (
-        <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-xs space-y-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-2.5">
-              <Database className="w-5 h-5 text-[#A1D900]" />
-              <h3 className="font-bold text-white text-base font-['Montserrat']">Segurança e Backup de Dados</h3>
-            </div>
-          </div>
-
-          <p className="text-xs text-slate-300 max-w-3xl leading-relaxed">
-            Armazenamento em nuvem com integridade referencial. Todos os agendamentos, presenças e prontuários estão protegidos.
-            Gere cópias de segurança em formato JSON ou restaure backups anteriores a qualquer momento.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-2.5 pt-1">
-            <button
-              onClick={exportarBackupCloud}
-              className="btn-conex-primary text-xs px-4 py-2 flex items-center gap-1.5 cursor-pointer border border-white/20"
-            >
-              <Download className="w-4 h-4 text-[#A1D900]" />
-              <span>Fazer Backup (JSON)</span>
-            </button>
-
-            <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-4 py-2 rounded-full flex items-center gap-1.5 cursor-pointer transition-colors">
-              <Upload className="w-4 h-4 text-slate-400" />
-              <span>Restaurar JSON</span>
-              <input
-                type="file"
-                accept=".json"
-                onChange={handleUploadBackup}
-                className="hidden"
-              />
-            </label>
           </div>
         </div>
       )}
