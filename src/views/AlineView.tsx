@@ -92,6 +92,26 @@ export const AlineView: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Banner de Identificação da Consultora */}
+      <div className="bg-[#004B8D] rounded-2xl p-6 text-white shadow-sm border-b-4 border-[#A1D900] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <div className="flex items-center gap-2 text-[#A1D900] text-xs font-bold uppercase tracking-wider mb-1 font-['Montserrat']">
+            <span>Mentoria de Negócios</span>
+            <span>•</span>
+            <span>Aline Silva</span>
+          </div>
+          <h2 className="text-2xl font-bold font-['Montserrat']">Prontuário e Grade</h2>
+          <p className="text-blue-100/90 text-xs mt-1 font-['Inter']">
+            Acompanhamento do histórico de evolução, prontuários de mentoria e grade semanal.
+          </p>
+        </div>
+
+        <div className="bg-[#334195] border border-blue-400/30 rounded-xl px-4 py-2 text-xs text-white">
+          <div><strong>Turno:</strong> 13h às 17h (Tarde)</div>
+          <div className="text-blue-200 text-[11px]">Sala 204 • Presencial</div>
+        </div>
+      </div>
+
       {/* Campo Select de Alunos para Navegação Rápida no Perfil */}
       <div className="bg-white dark:bg-[#161B22] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -125,26 +145,6 @@ export const AlineView: React.FC = () => {
               </option>
             ))}
           </select>
-        </div>
-      </div>
-
-      {/* Banner de Identificação da Consultora */}
-      <div className="bg-[#004B8D] rounded-2xl p-6 text-white shadow-sm border-b-4 border-[#A1D900] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-[#A1D900] text-xs font-bold uppercase tracking-wider mb-1 font-['Montserrat']">
-            <span>Mentoria de Negócios</span>
-            <span>•</span>
-            <span>Aline Silva</span>
-          </div>
-          <h2 className="text-2xl font-bold font-['Montserrat']">Prontuário e Grade</h2>
-          <p className="text-blue-100/90 text-xs mt-1 font-['Inter']">
-            Acompanhamento do histórico de evolução, prontuários de mentoria e grade semanal.
-          </p>
-        </div>
-
-        <div className="bg-[#334195] border border-blue-400/30 rounded-xl px-4 py-2 text-xs text-white">
-          <div><strong>Turno:</strong> 13h às 17h (Tarde)</div>
-          <div className="text-blue-200 text-[11px]">Sala 204 • Presencial</div>
         </div>
       </div>
 
