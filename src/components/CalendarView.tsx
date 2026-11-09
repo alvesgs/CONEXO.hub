@@ -14,8 +14,13 @@ interface CalendarViewProps {
   onViewModeChange?: (mode: 'semana' | 'mes') => void;
   onMarcarPresenca: (agendamentoId: string, status: StatusAgendamento) => void;
   onReagendar: (agendamentoId: string, dataAtual: string) => void;
-  onNovoAgendamentoParaData?: (data: string) => void;
+  onNovoAgendamentoParaData?: (data: string, hora?: string) => void;
 }
+
+const HORAS_GRADE = [
+  '08:00', '09:00', '10:00', '11:00', '12:00', 
+  '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'
+];
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
   agendamentos,
@@ -30,7 +35,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   // Inicializa na data do primeiro agendamento futuro/existente ou hoje (padrão out/2026 nos dados de teste)
   const initialDate = useMemo(() => {
     if (agendamentos.length > 0) {
-      // Procura primeiro agendamento ordenado
       const sorted = [...agendamentos].sort((a, b) => a.data.localeCompare(b.data));
       const [y, m, d] = sorted[0].data.split('-').map(Number);
       return new Date(y, m - 1, d, 12, 0, 0);
@@ -41,6 +45,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const [currentDate, setCurrentDate] = useState<Date>(initialDate);
   const [selectedConsultorId, setSelectedConsultorId] = useState<string>('todos');
   const [detalheAgendamento, setDetalheAgendamento] = useState<Agendamento | null>(null);
+  const [diaSelecionadoStr, setDiaSelecionadoStr] = useState<string>(
+    agendamentos[0]?.data || '2026-10-16'
+  );
 
   const mesesNomes = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -50,7 +57,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const diasSemanaNomes = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
   const diasSemanaAbrev = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
-  // Anos disponíveis para navegação anual
   const anosDisponiveis = [2024, 2025, 2026, 2027, 2028];
 
   const currentYear = currentDate.getFullYear();
@@ -105,6 +111,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
   const handleIrParaOutubro2026 = () => {
     setCurrentDate(new Date(2026, 9, 16, 12, 0, 0));
+    setDiaSelecionadoStr('2026-10-16');
   };
 
   const handleMudarMes = (mesIdx: number) => {
@@ -131,13 +138,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const diasDoMesGrid = useMemo(() => {
     const primeiroDiaMes = new Date(currentYear, currentMonth, 1, 12, 0, 0);
     let primeiroDiaSemana = primeiroDiaMes.getDay(); // 0 = Domingo, 1 = Segunda, ...
-    // Ajusta para Segunda ser 0 e Domingo ser 6
     const offsetInicio = primeiroDiaSemana === 0 ? 6 : primeiroDiaSemana - 1;
 
     const dias: { date: Date; dateStr: string; isCurrentMonth: boolean; isToday: boolean }[] = [];
     const hojeStr = formatYMD(new Date());
 
-    // Início na segunda-feira correspondente
     const inicioGrid = new Date(primeiroDiaMes);
     inicioGrid.setDate(inicioGrid.getDate() - offsetInicio);
 
@@ -153,7 +158,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       });
     }
 
-    // Se a última linha (últimos 7 dias) for inteiramente do próximo mês, corta para 35
     const ultimaLinhaPertenceProximoMes = dias.slice(35).every(d => !d.isCurrentMonth);
     return ultimaLinhaPertenceProximoMes ? dias.slice(0, 35) : dias;
   }, [currentYear, currentMonth]);
@@ -181,6 +185,18 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }
     return dias;
   }, [currentDate]);
+
+  // Helpers de horário
+  const getHourNumber = (timeStr: string) => {
+    if (!timeStr) return 0;
+    return parseInt(timeStr.split(':')[0], 10);
+  };
+
+  const getMinuteNumber = (timeStr: string) => {
+    if (!timeStr) return 0;
+    const parts = timeStr.split(':');
+    return parts.length > 1 ? parseInt(parts[1], 10) : 0;
+  };
 
   // Helper de cores e badges de status
   const getStatusBadge = (status: StatusAgendamento) => {
@@ -257,9 +273,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }
   }, [viewMode, diasDoMesGrid, diasDaSemanaGrid, agendamentosPorData]);
 
+  // Atendimentos do dia selecionado (para painel lateral do mês)
+  const agendamentosDiaSelecionado = useMemo(() => {
+    return agendamentosPorData[diaSelecionadoStr] || [];
+  }, [agendamentosPorData, diaSelecionadoStr]);
+
   return (
     <div className="space-y-4">
-      {/* BARRA SUPERIOR DE CONTROLES: NAVEGAÇÃO ANUAL, MENSAL E SEMANAL */}
+      {/* BARRA SUPERIOR DE CONTROLES: NAVEGAÇÃO ANUAL, MENSAL E FILTROS */}
       <div className="bg-slate-50/70 dark:bg-[#1E252E] p-3 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         {/* Título do Período e Navegadores Rápidos */}
         <div className="flex items-center gap-2">
@@ -288,7 +309,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </div>
 
           {/* Atalho caso queira voltar para Outubro de 2026 (base de dados de exemplo) */}
-          {currentYear !== 2026 || currentMonth !== 9 ? (
+          {(currentYear !== 2026 || currentMonth !== 9) && (
             <button
               onClick={handleIrParaOutubro2026}
               className="text-[11px] font-medium text-[#004B8D] dark:text-[#A1D900] bg-blue-50 dark:bg-blue-950/40 px-2 py-1 rounded-md border border-blue-200 dark:border-blue-800 cursor-pointer hover:underline"
@@ -296,7 +317,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             >
               Ir para Out/2026
             </button>
-          ) : null}
+          )}
 
           {/* Nome do Mês e Ano por extenso */}
           <div className="ml-1">
@@ -348,7 +369,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             </select>
           </div>
 
-          {/* Alternador de Modo Semana / Mês (se fornecido externamente ou interno) */}
+          {/* Alternador de Modo Semana / Mês */}
           {onViewModeChange && (
             <div className="flex items-center bg-white dark:bg-[#161B22] border border-slate-200 dark:border-slate-700 rounded-lg p-0.5 shadow-2xs">
               <button
@@ -378,297 +399,345 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         </div>
       </div>
 
-      {/* ============================================================ */}
-      {/* MODO 1: VISUALIZAÇÃO MENSAL (GRADE COMPLETA DO MÊS)          */}
-      {/* ============================================================ */}
-      {viewMode === 'mes' && (
-        <div className="bg-white dark:bg-[#161B22] rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
-          {/* Cabeçalho dos Dias da Semana */}
-          <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#1E252E] text-center text-xs font-semibold text-slate-600 dark:text-slate-300">
-            {diasSemanaNomes.map((dia, idx) => (
-              <div key={dia} className="py-2.5 px-1 truncate">
-                <span className="hidden sm:inline">{dia}</span>
-                <span className="sm:hidden">{diasSemanaAbrev[idx]}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Grade de Células de Dias */}
-          <div className="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-slate-100 dark:divide-slate-800">
-            {diasDoMesGrid.map((celula, idx) => {
-              const diaNum = celula.date.getDate();
-              const agsDoDia = agendamentosPorData[celula.dateStr] || [];
-              const isWeekend = celula.date.getDay() === 0 || celula.date.getDay() === 6;
-
-              return (
-                <div
-                  key={`${celula.dateStr}-${idx}`}
-                  className={`min-h-[105px] p-1.5 flex flex-col justify-between transition-colors ${
-                    !celula.isCurrentMonth
-                      ? 'bg-slate-50/50 dark:bg-[#0D1117]/50 text-slate-400 dark:text-slate-600'
-                      : isWeekend
-                      ? 'bg-slate-50/30 dark:bg-[#12161D]'
-                      : 'bg-white dark:bg-[#161B22]'
-                  }`}
-                >
-                  {/* Topo da Célula: Número do Dia e Botão Adicionar */}
-                  <div className="flex items-center justify-between mb-1">
-                    <span
-                      className={`text-xs font-semibold inline-flex items-center justify-center w-6 h-6 rounded-full ${
-                        celula.isToday
-                          ? 'bg-[#004B8D] text-white dark:bg-[#A1D900] dark:text-[#0D1117] font-bold'
-                          : celula.isCurrentMonth
-                          ? 'text-slate-800 dark:text-slate-200'
-                          : 'text-slate-400 dark:text-slate-600'
-                      }`}
-                    >
-                      {diaNum}
-                    </span>
-
-                    <div className="flex items-center gap-1">
-                      {agsDoDia.length > 0 && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-100 dark:bg-blue-950/80 text-[#004B8D] dark:text-blue-300">
-                          {agsDoDia.length}
-                        </span>
-                      )}
-                      {onNovoAgendamentoParaData && celula.isCurrentMonth && (
-                        <button
-                          type="button"
-                          onClick={() => onNovoAgendamentoParaData(celula.dateStr)}
-                          title={`Agendar para ${celula.dateStr}`}
-                          className="opacity-0 hover:opacity-100 focus:opacity-100 p-0.5 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-opacity cursor-pointer"
-                        >
-                          <Plus className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Lista de Atendimentos no Dia */}
-                  <div className="space-y-1 flex-1 overflow-hidden">
-                    {agsDoDia.slice(0, 3).map(ag => {
-                      const aluno = alunos.find(a => a.id === ag.alunoId);
-                      const statusInfo = getStatusBadge(ag.status);
-                      const tipoInfo = getTipoSessaoBadge(ag.tipo);
-
-                      return (
-                        <button
-                          key={ag.id}
-                          type="button"
-                          onClick={() => setDetalheAgendamento(ag)}
-                          className={`w-full text-left p-1 rounded text-[11px] border leading-tight transition-all truncate block cursor-pointer hover:shadow-xs ${statusInfo.bg}`}
-                          title={`${ag.horarioInicio} - ${aluno?.nome || 'Aluno'} (${tipoInfo.label})`}
-                        >
-                          <div className="flex items-center gap-1">
-                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${statusInfo.dot}`} />
-                            <span className="font-mono text-[10px] font-bold shrink-0">{ag.horarioInicio}</span>
-                            <span className="truncate font-medium">{aluno?.nome?.split(' ')[0] || 'Aluno'}</span>
-                          </div>
-                        </button>
-                      );
-                    })}
-
-                    {agsDoDia.length > 3 && (
-                      <button
-                        type="button"
-                        onClick={() => setDetalheAgendamento(agsDoDia[0])}
-                        className="text-[10px] text-slate-500 dark:text-slate-400 hover:underline pl-1 block font-medium"
-                      >
-                        +{agsDoDia.length - 3} mais...
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ============================================================ */}
-      {/* MODO 2: VISUALIZAÇÃO SEMANAL (7 COLUNAS COM DETALHES DE HORA) */}
-      {/* ============================================================ */}
+      {/* ========================================================================= */}
+      {/* MODO 1: VISUALIZAÇÃO SEMANAL COM HORAS NA LATERAL (TIMELINE CALENDÁRIO)  */}
+      {/* ========================================================================= */}
       {viewMode === 'semana' && (
         <div className="bg-white dark:bg-[#161B22] rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
-          {/* Subtítulo informativo da semana */}
+          {/* Subtítulo informativo */}
           <div className="p-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-[#1E252E] flex justify-between items-center text-xs">
             <span className="text-slate-600 dark:text-slate-300 font-medium">
               Semana de {diasDaSemanaGrid[0].date.getDate()} de {mesesNomes[diasDaSemanaGrid[0].date.getMonth()]} a {diasDaSemanaGrid[6].date.getDate()} de {mesesNomes[diasDaSemanaGrid[6].date.getMonth()]} de {diasDaSemanaGrid[6].date.getFullYear()}
             </span>
             <span className="text-[11px] text-slate-500 dark:text-slate-400">
-              Clique em qualquer atendimento para gerenciar presença ou reagendar
+              Grade horária com eixo lateral de horas • Turnos: 08h-12h e 13h-17h
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-7 divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-slate-800">
-            {diasDaSemanaGrid.map(diaInfo => {
-              const diaNomeSemana = diasSemanaNomes[diaInfo.date.getDay() === 0 ? 6 : diaInfo.date.getDay() - 1];
-              const diaNum = diaInfo.date.getDate();
-              const mesAbrev = mesesNomes[diaInfo.date.getMonth()].slice(0, 3);
-              const agsDoDia = agendamentosPorData[diaInfo.dateStr] || [];
-              const isWeekend = diaInfo.date.getDay() === 0 || diaInfo.date.getDay() === 6;
+          <div className="overflow-x-auto">
+            <div className="min-w-[780px]">
+              {/* LINHA DE CABEÇALHO DOS DIAS DA SEMANA */}
+              <div className="grid grid-cols-[60px_repeat(7,1fr)] sm:grid-cols-[68px_repeat(7,1fr)] border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#1E252E] sticky top-0 z-10">
+                {/* Célula superior da coluna de horas lateral */}
+                <div className="p-2 border-r border-slate-200/80 dark:border-slate-800/80 flex items-center justify-center text-[10px] font-mono text-slate-400 dark:text-slate-500 font-semibold">
+                  <Clock className="w-3.5 h-3.5" />
+                </div>
 
-              return (
-                <div
-                  key={diaInfo.dateStr}
-                  className={`min-h-[350px] p-2.5 flex flex-col ${
-                    diaInfo.isToday
-                      ? 'bg-blue-50/20 dark:bg-[#004B8D]/10'
-                      : isWeekend
-                      ? 'bg-slate-50/30 dark:bg-[#12161D]'
-                      : 'bg-white dark:bg-[#161B22]'
-                  }`}
-                >
-                  {/* Cabeçalho do dia */}
-                  <div className="pb-2 mb-2 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                    <div>
+                {/* 7 Colunas dos Dias da Semana */}
+                {diasDaSemanaGrid.map(diaInfo => {
+                  const diaNomeSemana = diasSemanaAbrev[diaInfo.date.getDay() === 0 ? 6 : diaInfo.date.getDay() - 1];
+                  const diaNum = diaInfo.date.getDate();
+                  const mesAbrev = mesesNomes[diaInfo.date.getMonth()].slice(0, 3);
+                  const agsDoDia = agendamentosPorData[diaInfo.dateStr] || [];
+
+                  return (
+                    <div
+                      key={diaInfo.dateStr}
+                      className={`p-2 text-center border-r border-slate-200/60 dark:border-slate-800/60 last:border-r-0 ${
+                        diaInfo.isToday ? 'bg-blue-50/40 dark:bg-blue-950/20' : ''
+                      }`}
+                    >
                       <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                         {diaNomeSemana}
                       </div>
-                      <div className="flex items-center gap-1.5 mt-0.5">
+                      <div className="flex items-center justify-center gap-1 mt-0.5">
                         <span
-                          className={`text-sm font-bold px-1.5 py-0.2 rounded-md ${
+                          className={`text-xs font-bold inline-flex items-center justify-center w-6 h-6 rounded-full ${
                             diaInfo.isToday
                               ? 'bg-[#004B8D] text-white dark:bg-[#A1D900] dark:text-[#0D1117]'
-                              : 'text-slate-900 dark:text-white'
+                              : 'text-slate-800 dark:text-slate-200'
                           }`}
                         >
                           {diaNum}
                         </span>
-                        <span className="text-xs text-slate-400">{mesAbrev}</span>
+                        <span className="text-[10px] text-slate-400">{mesAbrev}</span>
+                        {agsDoDia.length > 0 && (
+                          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-blue-100 dark:bg-blue-950 text-[#004B8D] dark:text-blue-300 ml-0.5">
+                            {agsDoDia.length}
+                          </span>
+                        )}
                       </div>
                     </div>
+                  );
+                })}
+              </div>
 
-                    {onNovoAgendamentoParaData && (
-                      <button
-                        type="button"
-                        onClick={() => onNovoAgendamentoParaData(diaInfo.dateStr)}
-                        title={`Novo agendamento em ${diaNum}/${mesAbrev}`}
-                        className="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
+              {/* CORPO DA GRADE: HORAS NA LATERAL E SLOTS DOS DIAS */}
+              <div className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                {HORAS_GRADE.map(hora => {
+                  const slotHour = parseInt(hora.split(':')[0], 10);
 
-                  {/* Lista de Atendimentos */}
-                  <div className="space-y-2 flex-1">
-                    {agsDoDia.length === 0 ? (
-                      <div className="h-full flex items-center justify-center p-4 text-center">
-                        <span className="text-[11px] text-slate-400 italic">Sem atendimentos</span>
+                  return (
+                    <div
+                      key={hora}
+                      className="grid grid-cols-[60px_repeat(7,1fr)] sm:grid-cols-[68px_repeat(7,1fr)] min-h-[58px]"
+                    >
+                      {/* COLUNA LATERAL DE HORAS (TIMELINE) */}
+                      <div className="p-2 border-r border-slate-200/80 dark:border-slate-800/80 flex items-start justify-end pr-2 bg-slate-50/40 dark:bg-[#1E252E]/30 select-none">
+                        <span className="text-[11px] font-mono font-medium text-slate-400 dark:text-slate-500">
+                          {hora}
+                        </span>
                       </div>
-                    ) : (
-                      agsDoDia.map(ag => {
-                        const aluno = alunos.find(a => a.id === ag.alunoId);
-                        const consultor = consultores.find(c => c.id === ag.consultorId);
-                        const statusInfo = getStatusBadge(ag.status);
-                        const tipoInfo = getTipoSessaoBadge(ag.tipo);
+
+                      {/* 7 CÉLULAS DOS DIAS NESTE HORÁRIO ESPECÍFICO */}
+                      {diasDaSemanaGrid.map(diaInfo => {
+                        const agsDoDia = agendamentosPorData[diaInfo.dateStr] || [];
+
+                        // Agendamentos que INICIAM exatamente nesta hora
+                        const agsIniciando = agsDoDia.filter(ag => getHourNumber(ag.horarioInicio) === slotHour);
+
+                        // Agendamentos que estão EM ANDAMENTO (iniciaram antes e continuam nesta hora)
+                        const agsEmAndamento = agsDoDia.filter(ag => {
+                          const start = getHourNumber(ag.horarioInicio);
+                          const end = getHourNumber(ag.horarioFim);
+                          const endMin = getMinuteNumber(ag.horarioFim);
+                          return start < slotHour && (end > slotHour || (end === slotHour && endMin > 0));
+                        });
 
                         return (
                           <div
-                            key={ag.id}
-                            className={`p-2.5 rounded-xl border border-l-4 shadow-2xs transition-all hover:shadow-xs bg-slate-50/70 dark:bg-[#1E252E] ${tipoInfo.borderLeft} border-slate-200 dark:border-slate-700 space-y-1.5`}
+                            key={`${diaInfo.dateStr}-${hora}`}
+                            className={`p-1.5 border-r border-slate-100 dark:border-slate-800/50 last:border-r-0 relative group transition-colors ${
+                              diaInfo.isToday ? 'bg-blue-50/10 dark:bg-blue-950/10' : ''
+                            } hover:bg-slate-50/50 dark:hover:bg-[#1E252E]/40`}
                           >
-                            {/* Horário e Tipo */}
-                            <div className="flex items-center justify-between">
-                              <span className="font-mono text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1">
-                                <Clock className="w-3 h-3 text-slate-400" />
-                                {ag.horarioInicio} - {ag.horarioFim}
-                              </span>
-                              <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold border ${statusInfo.bg}`}>
-                                {statusInfo.label}
-                              </span>
-                            </div>
+                            {/* Card de Atendimento Iniciando nesta hora */}
+                            {agsIniciando.map(ag => {
+                              const aluno = alunos.find(a => a.id === ag.alunoId);
+                              const consultor = consultores.find(c => c.id === ag.consultorId);
+                              const statusInfo = getStatusBadge(ag.status);
+                              const tipoInfo = getTipoSessaoBadge(ag.tipo);
 
-                            {/* Aluno & Negócio */}
-                            <div>
+                              return (
+                                <button
+                                  key={ag.id}
+                                  type="button"
+                                  onClick={() => setDetalheAgendamento(ag)}
+                                  className={`w-full text-left p-1.5 rounded-lg border border-l-3 shadow-2xs transition-all hover:shadow-xs block cursor-pointer mb-1 ${tipoInfo.borderLeft} ${statusInfo.bg}`}
+                                  title={`Clique para ver detalhes e gerenciar presença`}
+                                >
+                                  <div className="flex items-center justify-between gap-1 leading-none mb-1">
+                                    <span className="font-mono text-[10px] font-bold">
+                                      {ag.horarioInicio}-{ag.horarioFim}
+                                    </span>
+                                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${statusInfo.dot}`} />
+                                  </div>
+                                  <div className="font-semibold text-xs truncate leading-tight">
+                                    {aluno?.nome?.split(' ')[0] || 'Aluno'}
+                                  </div>
+                                  <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate leading-tight mt-0.5">
+                                    {consultor?.nome?.split(' ')[0]} • {ag.sala.split(' - ')[0]}
+                                  </div>
+                                </button>
+                              );
+                            })}
+
+                            {/* Indicador sutil de sessão contínua de 2h iniciada anteriormente */}
+                            {agsIniciando.length === 0 && agsEmAndamento.length > 0 && (
+                              <div
+                                onClick={() => setDetalheAgendamento(agsEmAndamento[0])}
+                                className="h-full flex items-center px-1.5 py-1 text-[10px] text-slate-400 dark:text-slate-500 bg-slate-50/50 dark:bg-[#1E252E]/30 border-l-2 border-dashed border-indigo-400 dark:border-indigo-600 rounded-r cursor-pointer hover:bg-slate-100 dark:hover:bg-[#1E252E]"
+                                title="Sessão de 2h em andamento. Clique para ver detalhes."
+                              >
+                                <span className="truncate">↳ {alunos.find(a => a.id === agsEmAndamento[0].alunoId)?.nome?.split(' ')[0]} (até {agsEmAndamento[0].horarioFim})</span>
+                              </div>
+                            )}
+
+                            {/* Botão sutil de Adicionar Agendamento neste horário se estiver vazio */}
+                            {agsIniciando.length === 0 && agsEmAndamento.length === 0 && onNovoAgendamentoParaData && (
                               <button
                                 type="button"
-                                onClick={() => setDetalheAgendamento(ag)}
-                                className="font-semibold text-xs text-slate-900 dark:text-white hover:text-[#004B8D] dark:hover:text-[#A1D900] text-left block truncate w-full cursor-pointer"
+                                onClick={() => onNovoAgendamentoParaData(diaInfo.dateStr, hora)}
+                                title={`Agendar para ${diaInfo.dateStr} às ${hora}`}
+                                className="opacity-0 group-hover:opacity-100 absolute inset-0 flex items-center justify-center text-slate-400 hover:text-[#004B8D] dark:hover:text-[#A1D900] transition-opacity cursor-pointer"
                               >
-                                {aluno?.nome || 'Aluno'}
+                                <Plus className="w-3.5 h-3.5" />
                               </button>
-                              <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                                {aluno?.negocio || 'Negócio'}
-                              </div>
-                            </div>
-
-                            {/* Consultor e Sala */}
-                            <div className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1 truncate">
-                              <User className="w-2.5 h-2.5 shrink-0" />
-                              <span className="truncate">{consultor?.nome?.split(' ')[0]} • {ag.sala.split(' - ')[0]}</span>
-                            </div>
-
-                            {/* Ações Rápidas de Presença */}
-                            <div className="pt-1 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between gap-1">
-                              {ag.status !== 'realizado' && ag.status !== 'reagendado' && (
-                                <>
-                                  {ag.status !== 'confirmado' && (
-                                    <button
-                                      type="button"
-                                      onClick={() => onMarcarPresenca(ag.id, 'confirmado')}
-                                      title="Confirmar Presença"
-                                      className="p-1 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-[#A1D900] hover:bg-emerald-100 dark:hover:bg-emerald-900/60 cursor-pointer"
-                                    >
-                                      <Check className="w-3 h-3" />
-                                    </button>
-                                  )}
-                                  <button
-                                    type="button"
-                                    onClick={() => onMarcarPresenca(ag.id, 'realizado')}
-                                    title="Marcar como Realizado"
-                                    className="px-1.5 py-0.5 rounded bg-emerald-600 text-white text-[10px] font-bold hover:bg-emerald-700 cursor-pointer"
-                                  >
-                                    Pres.
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => onMarcarPresenca(ag.id, 'cancelado_menos_24h')}
-                                    title="Cancelou <24h"
-                                    className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-[10px] font-bold hover:bg-amber-200 cursor-pointer"
-                                  >
-                                    &lt;24h
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => onMarcarPresenca(ag.id, 'falta_injustificada')}
-                                    title="Falta Injustificada"
-                                    className="px-1.5 py-0.5 rounded bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 text-[10px] font-bold hover:bg-rose-200 cursor-pointer"
-                                  >
-                                    Falta
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => onReagendar(ag.id, ag.data)}
-                                    title="Reagendar"
-                                    className="p-1 rounded bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 cursor-pointer"
-                                  >
-                                    <RefreshCw className="w-3 h-3" />
-                                  </button>
-                                </>
-                              )}
-                              {ag.status === 'realizado' && (
-                                <span className="text-[10px] text-emerald-600 dark:text-[#A1D900] font-bold flex items-center gap-1">
-                                  <CheckCircle className="w-3 h-3" /> Concluído
-                                </span>
-                              )}
-                            </div>
+                            )}
                           </div>
                         );
-                      })
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* ============================================================ */}
-      {/* MODAL DETALHADO DO AGENDAMENTO (AO CLICAR NO CALENDÁRIO)     */}
-      {/* ============================================================ */}
+      {/* ========================================================================= */}
+      {/* MODO 2: VISUALIZAÇÃO MENSAL COM PAINEL LATERAL DE HORAS DO DIA            */}
+      {/* ========================================================================= */}
+      {viewMode === 'mes' && (
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          {/* Grade do Mês (3 colunas em tela grande) */}
+          <div className="lg:col-span-3 bg-white dark:bg-[#161B22] rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
+            {/* Cabeçalho dos Dias da Semana */}
+            <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#1E252E] text-center text-xs font-semibold text-slate-600 dark:text-slate-300">
+              {diasSemanaNomes.map((dia, idx) => (
+                <div key={dia} className="py-2.5 px-1 truncate">
+                  <span className="hidden sm:inline">{dia}</span>
+                  <span className="sm:hidden">{diasSemanaAbrev[idx]}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Grade de Células de Dias */}
+            <div className="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-slate-100 dark:divide-slate-800">
+              {diasDoMesGrid.map((celula, idx) => {
+                const diaNum = celula.date.getDate();
+                const agsDoDia = agendamentosPorData[celula.dateStr] || [];
+                const isWeekend = celula.date.getDay() === 0 || celula.date.getDay() === 6;
+                const isSelected = celula.dateStr === diaSelecionadoStr;
+
+                return (
+                  <div
+                    key={`${celula.dateStr}-${idx}`}
+                    onClick={() => setDiaSelecionadoStr(celula.dateStr)}
+                    className={`min-h-[96px] p-1.5 flex flex-col justify-between transition-colors cursor-pointer ${
+                      isSelected
+                        ? 'ring-2 ring-inset ring-[#004B8D] dark:ring-[#A1D900] bg-blue-50/20 dark:bg-[#004B8D]/10'
+                        : !celula.isCurrentMonth
+                        ? 'bg-slate-50/50 dark:bg-[#0D1117]/50 text-slate-400 dark:text-slate-600'
+                        : isWeekend
+                        ? 'bg-slate-50/30 dark:bg-[#12161D]'
+                        : 'bg-white dark:bg-[#161B22]'
+                    } hover:bg-slate-50/80 dark:hover:bg-[#1E252E]/60`}
+                  >
+                    {/* Topo da Célula: Número do Dia e Contador */}
+                    <div className="flex items-center justify-between mb-1">
+                      <span
+                        className={`text-xs font-semibold inline-flex items-center justify-center w-5 h-5 rounded-full ${
+                          celula.isToday
+                            ? 'bg-[#004B8D] text-white dark:bg-[#A1D900] dark:text-[#0D1117] font-bold'
+                            : celula.isCurrentMonth
+                            ? 'text-slate-800 dark:text-slate-200'
+                            : 'text-slate-400 dark:text-slate-600'
+                        }`}
+                      >
+                        {diaNum}
+                      </span>
+
+                      {agsDoDia.length > 0 && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-100 dark:bg-blue-950/80 text-[#004B8D] dark:text-blue-300">
+                          {agsDoDia.length}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Pílulas Resumidas dos Atendimentos */}
+                    <div className="space-y-1 flex-1 overflow-hidden">
+                      {agsDoDia.slice(0, 2).map(ag => {
+                        const aluno = alunos.find(a => a.id === ag.alunoId);
+                        const statusInfo = getStatusBadge(ag.status);
+
+                        return (
+                          <div
+                            key={ag.id}
+                            className={`p-1 rounded text-[10px] border leading-tight truncate ${statusInfo.bg}`}
+                          >
+                            <span className="font-mono font-bold mr-1">{ag.horarioInicio}</span>
+                            <span className="truncate">{aluno?.nome?.split(' ')[0]}</span>
+                          </div>
+                        );
+                      })}
+
+                      {agsDoDia.length > 2 && (
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 pl-1 font-medium">
+                          +{agsDoDia.length - 2} mais
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* PAINEL LATERAL: HORAS E DETALHES DO DIA SELECIONADO */}
+          <div className="bg-white dark:bg-[#161B22] rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-xs flex flex-col">
+            <div className="pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">
+                  Horas do Dia Selecionado
+                </span>
+                <h4 className="font-bold text-slate-900 dark:text-white text-sm font-['Montserrat']">
+                  {diaSelecionadoStr.split('-').reverse().join('/')}
+                </h4>
+              </div>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#004B8D] dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                {agendamentosDiaSelecionado.length} {agendamentosDiaSelecionado.length === 1 ? 'atend.' : 'atend.'}
+              </span>
+            </div>
+
+            {/* Linha do Tempo Lateral de Horas */}
+            <div className="mt-3 space-y-2 flex-1 overflow-y-auto max-h-[460px] pr-1">
+              {HORAS_GRADE.map(hora => {
+                const slotHour = parseInt(hora.split(':')[0], 10);
+                const agsNestaHora = agendamentosDiaSelecionado.filter(
+                  ag => getHourNumber(ag.horarioInicio) === slotHour
+                );
+
+                return (
+                  <div key={hora} className="flex items-start gap-2 text-xs">
+                    <span className="font-mono text-[11px] text-slate-400 dark:text-slate-500 w-12 shrink-0 pt-0.5">
+                      {hora}
+                    </span>
+
+                    <div className="flex-1">
+                      {agsNestaHora.length > 0 ? (
+                        agsNestaHora.map(ag => {
+                          const aluno = alunos.find(a => a.id === ag.alunoId);
+                          const consultor = consultores.find(c => c.id === ag.consultorId);
+                          const statusInfo = getStatusBadge(ag.status);
+                          const tipoInfo = getTipoSessaoBadge(ag.tipo);
+
+                          return (
+                            <button
+                              key={ag.id}
+                              type="button"
+                              onClick={() => setDetalheAgendamento(ag)}
+                              className={`w-full text-left p-2 rounded-lg border border-l-3 transition-all hover:shadow-xs cursor-pointer mb-1 ${tipoInfo.borderLeft} ${statusInfo.bg}`}
+                            >
+                              <div className="flex items-center justify-between mb-0.5">
+                                <span className="font-mono text-[10px] font-bold">
+                                  {ag.horarioInicio} - {ag.horarioFim}
+                                </span>
+                                <span className={`text-[9px] px-1 py-0.2 rounded font-semibold ${statusInfo.bg}`}>
+                                  {statusInfo.label}
+                                </span>
+                              </div>
+                              <div className="font-semibold text-xs truncate">
+                                {aluno?.nome || 'Aluno'}
+                              </div>
+                              <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                                {consultor?.nome?.split(' ')[0]} • {ag.sala.split(' - ')[0]}
+                              </div>
+                            </button>
+                          );
+                        })
+                      ) : (
+                        <div
+                          onClick={() => onNovoAgendamentoParaData && onNovoAgendamentoParaData(diaSelecionadoStr, hora)}
+                          className="h-7 border border-dashed border-slate-200 dark:border-slate-800 rounded-md flex items-center justify-between px-2 text-[10px] text-slate-400 hover:border-slate-400 dark:hover:border-slate-600 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer"
+                        >
+                          <span>Horário disponível</span>
+                          <Plus className="w-3 h-3" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL DETALHADO DO AGENDAMENTO (AO CLICAR EM QUALQUER SESSÃO)             */}
+      {/* ========================================================================= */}
       {detalheAgendamento && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           {(() => {

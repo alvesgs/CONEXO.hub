@@ -315,8 +315,15 @@ export const MaxView: React.FC = () => {
                   setReagendandoAgId(id);
                   setReagendarData(dataAtual);
                 }}
-                onNovoAgendamentoParaData={(dataEscolhida) => {
+                onNovoAgendamentoParaData={(dataEscolhida, horaEscolhida) => {
                   setNovaData(dataEscolhida);
+                  if (horaEscolhida) {
+                    setNovoInicio(horaEscolhida);
+                    const [h, m] = horaEscolhida.split(':').map(Number);
+                    const duracao = novoTipo === 'diagnostico_1h' ? 1 : 2;
+                    const hFim = String(h + duracao).padStart(2, '0');
+                    setNovoFim(`${hFim}:${String(m || 0).padStart(2, '0')}`);
+                  }
                   setShowModalAgendamento(true);
                 }}
               />
