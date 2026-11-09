@@ -55,7 +55,7 @@ const STORAGE_KEY = 'conex_hub_database_v1';
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [role, setRole] = useState<Role>(null);
-  const [selectedAlunoId, setSelectedAlunoId] = useState<string>('a1'); // Arthur por padrão
+  const [selectedAlunoId, setSelectedAlunoId] = useState<string>(''); // Vazio por padrão para exibir sob demanda
   const [alertaGlobal, setAlertaGlobal] = useState<string | null>(null);
 
   // Tema Claro / Escuro

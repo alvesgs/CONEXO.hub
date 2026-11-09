@@ -35,13 +35,19 @@ export const AlineView: React.FC = () => {
   const [novoMatLink, setNovoMatLink] = useState('');
   const [showModalMaterial, setShowModalMaterial] = useState(false);
 
-  const alunoAtual = alunos.find(a => a.id === selectedAlunoId) || alunos[0];
-  const diariosDoAluno = diarios.filter(d => d.alunoId === alunoAtual?.id);
-  const duvidasPendentes = duvidas.filter(d => d.consultorId === 'c1' || d.alunoId === alunoAtual?.id);
+  const alunoAtual = alunos.find(a => a.id === selectedAlunoId) || null;
+  const diariosDoAluno = alunoAtual ? diarios.filter(d => d.alunoId === alunoAtual.id) : [];
+  const duvidasPendentes = alunoAtual 
+    ? duvidas.filter(d => d.consultorId === 'c1' || d.alunoId === alunoAtual.id)
+    : duvidas.filter(d => d.consultorId === 'c1');
   const meusAgendamentos = agendamentos.filter(a => a.consultorId === 'c1');
 
   const handleSalvarDiario = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!alunoAtual) {
+      alert('Por favor, selecione um empreendedor no campo de seleção.');
+      return;
+    }
     if (!novoDiagnostico || !novaTarefa) {
       alert('Por favor, preencha o diagnóstico e as tarefas combinadas.');
       return;
@@ -104,14 +110,15 @@ export const AlineView: React.FC = () => {
 
         <div className="flex items-center gap-2.5 w-full sm:w-auto">
           <label htmlFor="select-aluno-mentor" className="text-xs font-semibold text-slate-600 dark:text-slate-300 shrink-0 font-['Montserrat']">
-            Aluno:
+            Empreendedor:
           </label>
           <select
             id="select-aluno-mentor"
-            value={alunoAtual?.id}
+            value={alunoAtual?.id || ''}
             onChange={(e) => setSelectedAlunoId(e.target.value)}
             className="w-full sm:w-80 bg-slate-50 dark:bg-[#0D1117] border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#004B8D] dark:focus:ring-[#A1D900] cursor-pointer shadow-2xs"
           >
+            <option value="">-- Escolha um empreendedor --</option>
             {alunos.map(aluno => (
               <option key={aluno.id} value={aluno.id}>
                 {aluno.nome} — {aluno.negocio} ({aluno.statusPrograma})
@@ -144,79 +151,11 @@ export const AlineView: React.FC = () => {
       {/* Conteúdo da Aba Selecionada na Barra Lateral */}
       {/* ABA 1: PRONTUÁRIO DIGITAL UNIFICADO (DIÁRIO DE BORDO) */}
       {activeTab === 'prontuario' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Seletor Lateral de Empreendedor */}
-          <div className="lg:col-span-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-['Montserrat']">
-                Selecionar Empreendedor
-              </h3>
-            </div>
-
-            {/* Campo Select de Alunos */}
-            <select
-              value={alunoAtual?.id}
-              onChange={(e) => setSelectedAlunoId(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-[#0D1117] border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#004B8D] dark:focus:ring-[#A1D900] cursor-pointer shadow-2xs"
-            >
-              {alunos.map(aluno => (
-                <option key={aluno.id} value={aluno.id}>
-                  {aluno.nome} — {aluno.negocio}
-                </option>
-              ))}
-            </select>
-            <div className="space-y-2">
-              {alunos.map(aluno => {
-                const isSelected = aluno.id === alunoAtual?.id;
-                return (
-                  <button
-                    key={aluno.id}
-                    onClick={() => setSelectedAlunoId(aluno.id)}
-                    className={`w-full text-left p-3.5 rounded-xl border transition-all cursor-pointer ${
-                      isSelected
-                        ? 'bg-[#004B8D] text-white border-[#004B8D] shadow-sm font-semibold'
-                        : 'bg-white dark:bg-[#161B22] border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-[#1A1A1A] dark:text-slate-100'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className={`font-bold text-sm ${isSelected ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
-                        {aluno.nome}
-                      </div>
-                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                        isSelected 
-                          ? 'bg-[#A1D900] text-[#1A1A1A] font-bold' 
-                          : aluno.statusPrograma === 'Concluído' 
-                            ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300' 
-                            : aluno.statusPrograma === 'MEI Formalizado' 
-                              ? 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300' 
-                              : aluno.statusPrograma === 'Desligado' 
-                                ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300' 
-                                : 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
-                      }`}>
-                        {aluno.statusPrograma}
-                      </span>
-                    </div>
-                    <div className={`text-xs mt-1 ${isSelected ? 'text-blue-100' : 'text-slate-600 dark:text-slate-400'}`}>
-                      {aluno.negocio}
-                    </div>
-                    <div className={`text-[11px] mt-2 flex justify-between ${isSelected ? 'text-blue-200' : 'text-slate-500 dark:text-slate-400'}`}>
-                      <span>{aluno.encontrosRealizados} de 5 encontros</span>
-                      <span className={`font-medium ${isSelected ? 'text-[#A1D900]' : 'text-slate-700 dark:text-slate-300'}`}>
-                        {aluno.statusMei}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Área Principal do Prontuário */}
-          <div className="lg:col-span-8 space-y-6">
-            {alunoAtual ? (
-              <>
-                {/* Cabeçalho do Prontuário do Aluno */}
-                <div className="bg-white dark:bg-[#161B22] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="space-y-6">
+          {alunoAtual ? (
+            <>
+              {/* Cabeçalho do Prontuário do Aluno */}
+              <div className="bg-white dark:bg-[#161B22] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-xl font-bold text-slate-900 dark:text-white font-['Montserrat']">{alunoAtual.nome}</h3>
@@ -395,11 +334,18 @@ export const AlineView: React.FC = () => {
                 </div>
               </>
             ) : (
-              <div className="bg-white dark:bg-[#161B22] p-12 text-center rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-400">
-                Selecione um empreendedor à esquerda para carregar o diário de bordo.
+              <div className="bg-white dark:bg-[#161B22] p-12 text-center rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 space-y-3 shadow-xs">
+                <div className="w-12 h-12 mx-auto rounded-full bg-blue-50 dark:bg-blue-950/40 text-[#004B8D] dark:text-[#A1D900] flex items-center justify-center">
+                  <User className="w-6 h-6" />
+                </div>
+                <h4 className="font-bold text-slate-900 dark:text-white text-base font-['Montserrat']">
+                  Nenhum empreendedor selecionado
+                </h4>
+                <p className="text-xs max-w-md mx-auto">
+                  Selecione um empreendedor no campo de seleção acima para carregar o prontuário, a linha do tempo de evolução e registrar novos atendimentos.
+                </p>
               </div>
             )}
-          </div>
         </div>
       )}
 
