@@ -122,14 +122,14 @@ export const INITIAL_ALUNOS: Aluno[] = [
   }
 ];
 
-// Data de hoje e próximos dias para visualização
+// Data de hoje e próximos dias para visualização (Novembro 2026)
 export const INITIAL_AGENDAMENTOS: Agendamento[] = [
   {
     id: 'ag1',
     alunoId: 'a1', // Arthur Santana
     consultorId: 'c1', // Aline
     tipo: 'mentoria_2h',
-    data: '2026-10-16',
+    data: '2026-11-09',
     horarioInicio: '15:00',
     horarioFim: '17:00',
     sala: 'Sala 204 - Bloco Empreendedorismo',
@@ -142,13 +142,13 @@ export const INITIAL_AGENDAMENTOS: Agendamento[] = [
     alunoId: 'a2', // Juliana Costa
     consultorId: 'c1', // Aline
     tipo: 'diagnostico_1h',
-    data: '2026-10-16',
+    data: '2026-11-09',
     horarioInicio: '13:00',
     horarioFim: '14:00',
     sala: 'Sala 204 - Bloco Empreendedorismo',
     status: 'confirmado',
     lembreteEnviado24h: true,
-    dataEnvioLembrete: '2026-10-15 10:00',
+    dataEnvioLembrete: '2026-11-08 10:00',
     observacoes: 'Entrevista de alinhamento financeiro complementar.'
   },
   {
@@ -156,13 +156,13 @@ export const INITIAL_AGENDAMENTOS: Agendamento[] = [
     alunoId: 'a4', // Vanessa Souza
     consultorId: 'c1', // Aline
     tipo: 'diagnostico_1h',
-    data: '2026-10-16',
+    data: '2026-11-09',
     horarioInicio: '14:00',
     horarioFim: '15:00',
     sala: 'Sala 204 - Bloco Empreendedorismo',
     status: 'confirmado',
     lembreteEnviado24h: true,
-    dataEnvioLembrete: '2026-10-15 10:30',
+    dataEnvioLembrete: '2026-11-08 10:30',
     observacoes: 'Casamento perfeito de grade: 13h-14h + 14h-15h + 15h-17h preenchendo o turno de 4 horas sem ociosidade.'
   },
   {
@@ -170,13 +170,26 @@ export const INITIAL_AGENDAMENTOS: Agendamento[] = [
     alunoId: 'a4',
     consultorId: 'c1',
     tipo: 'diagnostico_1h',
-    data: '2026-10-20',
+    data: '2026-11-12',
     horarioInicio: '13:00',
     horarioFim: '14:00',
     sala: 'Sala 204 - Bloco Empreendedorismo',
     status: 'agendado',
     lembreteEnviado24h: false,
     observacoes: 'ATENÇÃO MAX: Slot isolado de 1h! Necessário casar uma segunda entrevista de 1h das 14h às 15h para não ociar a consultora Aline.'
+  },
+  {
+    id: 'ag5',
+    alunoId: 'a3', // Henrique Souza
+    consultorId: 'c1',
+    tipo: 'mentoria_2h',
+    data: '2026-11-13',
+    horarioInicio: '14:00',
+    horarioFim: '16:00',
+    sala: 'Sala 204 - Bloco Empreendedorismo',
+    status: 'confirmado',
+    lembreteEnviado24h: true,
+    observacoes: 'Mentoria 2: Validação de fluxo de caixa da barbearia.'
   }
 ];
 
@@ -187,14 +200,14 @@ export const INITIAL_DIARIOS: EntradaDiarioDeBordo[] = [
     consultorId: 'c1',
     agendamentoId: 'ag0_prev',
     numeroEncontro: 0, // Diagnóstico Inicial
-    data: '2026-10-08',
+    data: '2026-11-02',
     diagnosticoResumo: 'Arthur vende quentinhas de rua sozinho. Não sabe o lucro líquido real porque usa o dinheiro das vendas para pagar o mercado no mesmo dia. Tem R$ 400 em fiados anotados em pedaços de papelão.',
     orientacoesPrestadas: 'Explicado o conceito de pró-labore e separação de caixas. Mostrado como o fiado sem controle consome o capital de giro.',
     tarefaProximoEncontro: '1. Guardar todos os comprovantes de compras da feira durante 7 dias em um envelope. 2. Parar de anotar fiado em papelão e listar clientes devedores numa folha pautada.',
     tarefaStatusAnterior: 'pendente',
     statusFormalizacaoMei: 'Informal / Sem CNPJ',
     proximosPassos: 'Iniciar o Encontro 1 de Mentoria com a montagem da planilha simples de custos dos ingredientes das marmitas.',
-    criadoEm: '2026-10-08 11:30'
+    criadoEm: '2026-11-02 11:30'
   }
 ];
 

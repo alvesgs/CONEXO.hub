@@ -22,6 +22,14 @@ const HORAS_GRADE = [
   '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'
 ];
 
+// Helper para formatar YYYY-MM-DD com segurança de fuso
+const formatYMD = (d: Date): string => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dia = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dia}`;
+};
+
 export const CalendarView: React.FC<CalendarViewProps> = ({
   agendamentos,
   alunos,
@@ -32,22 +40,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   onReagendar,
   onNovoAgendamentoParaData,
 }) => {
-  // Inicializa na data do primeiro agendamento futuro/existente ou hoje (padrão out/2026 nos dados de teste)
-  const initialDate = useMemo(() => {
-    if (agendamentos.length > 0) {
-      const sorted = [...agendamentos].sort((a, b) => a.data.localeCompare(b.data));
-      const [y, m, d] = sorted[0].data.split('-').map(Number);
-      return new Date(y, m - 1, d, 12, 0, 0);
-    }
-    return new Date();
-  }, []);
-
-  const [currentDate, setCurrentDate] = useState<Date>(initialDate);
+  // Inicializa sempre na data atual (Hoje)
+  const [currentDate, setCurrentDate] = useState<Date>(() => new Date());
   const [selectedConsultorId, setSelectedConsultorId] = useState<string>('todos');
   const [detalheAgendamento, setDetalheAgendamento] = useState<Agendamento | null>(null);
-  const [diaSelecionadoStr, setDiaSelecionadoStr] = useState<string>(
-    agendamentos[0]?.data || '2026-10-16'
-  );
+  const [diaSelecionadoStr, setDiaSelecionadoStr] = useState<string>(() => formatYMD(new Date()));
 
   const mesesNomes = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -109,11 +106,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     setCurrentDate(new Date());
   };
 
-  const handleIrParaOutubro2026 = () => {
-    setCurrentDate(new Date(2026, 9, 16, 12, 0, 0));
-    setDiaSelecionadoStr('2026-10-16');
-  };
-
   const handleMudarMes = (mesIdx: number) => {
     const nova = new Date(currentDate);
     nova.setMonth(mesIdx);
@@ -124,14 +116,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     const nova = new Date(currentDate);
     nova.setFullYear(ano);
     setCurrentDate(nova);
-  };
-
-  // Helper para formatar YYYY-MM-DD com segurança de fuso
-  const formatYMD = (d: Date): string => {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const dia = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${dia}`;
   };
 
   // CÁLCULO DOS DIAS DO MÊS (GRADE 7x6 = 42 dias com Segunda como início)
@@ -307,17 +291,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-
-          {/* Atalho caso queira voltar para Outubro de 2026 (base de dados de exemplo) */}
-          {(currentYear !== 2026 || currentMonth !== 9) && (
-            <button
-              onClick={handleIrParaOutubro2026}
-              className="text-[11px] font-medium text-[#004B8D] dark:text-[#A1D900] bg-blue-50 dark:bg-blue-950/40 px-2 py-1 rounded-md border border-blue-200 dark:border-blue-800 cursor-pointer hover:underline"
-              title="Ver agendamentos cadastrados de demonstração"
-            >
-              Ir para Out/2026
-            </button>
-          )}
 
           {/* Nome do Mês e Ano por extenso */}
           <div className="ml-1">

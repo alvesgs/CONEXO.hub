@@ -113,12 +113,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>(() => {
     const saved = localStorage.getItem(`${STORAGE_KEY}_agendamentos`);
-    return saved ? JSON.parse(saved) : INITIAL_AGENDAMENTOS;
+    if (saved) {
+      try {
+        const parsed: Agendamento[] = JSON.parse(saved);
+        // Sincroniza e migra quaisquer agendamentos antigos de 2026-10 para 2026-11 (mês atual)
+        const migrados = parsed.map(ag => ({
+          ...ag,
+          data: ag.data.startsWith('2026-10') ? ag.data.replace('2026-10-', '2026-11-') : ag.data
+        }));
+        return migrados;
+      } catch {
+        return INITIAL_AGENDAMENTOS;
+      }
+    }
+    return INITIAL_AGENDAMENTOS;
   });
 
   const [diarios, setDiarios] = useState<EntradaDiarioDeBordo[]>(() => {
     const saved = localStorage.getItem(`${STORAGE_KEY}_diarios`);
-    return saved ? JSON.parse(saved) : INITIAL_DIARIOS;
+    if (saved) {
+      try {
+        const parsed: EntradaDiarioDeBordo[] = JSON.parse(saved);
+        return parsed.map(d => ({
+          ...d,
+          data: d.data.startsWith('2026-10') ? d.data.replace('2026-10-', '2026-11-') : d.data
+        }));
+      } catch {
+        return INITIAL_DIARIOS;
+      }
+    }
+    return INITIAL_DIARIOS;
   });
 
   const [duvidas, setDuvidas] = useState<DuvidaMentorado[]>(() => {

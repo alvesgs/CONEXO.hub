@@ -104,7 +104,7 @@ export const ArthurView: React.FC = () => {
   }, [notificacaoAtiva]);
 
   // Estados do Calendário Principal (com Escolha de Mês)
-  const [mesSelecionado, setMesSelecionado] = useState<string>('2026-10');
+  const [mesSelecionado, setMesSelecionado] = useState<string>('2026-11');
   const diasDoMesAtual = DIAS_DISPONIVEIS.filter(d => d.mesChave === mesSelecionado);
 
   const [dataSelecionada, setDataSelecionada] = useState<string>(diasDoMesAtual[0]?.data || DIAS_DISPONIVEIS[0].data);
@@ -112,7 +112,7 @@ export const ArthurView: React.FC = () => {
 
   // Estados de Reagendamento (com Escolha de Mês)
   const [showModalReagendar, setShowModalReagendar] = useState(false);
-  const [mesReagendamento, setMesReagendamento] = useState<string>('2026-10');
+  const [mesReagendamento, setMesReagendamento] = useState<string>('2026-11');
   const diasDoMesReagendamento = DIAS_DISPONIVEIS.filter(d => d.mesChave === mesReagendamento);
 
   const [novaDataReagendamento, setNovaDataReagendamento] = useState<string>(diasDoMesReagendamento[0]?.data || DIAS_DISPONIVEIS[0].data);

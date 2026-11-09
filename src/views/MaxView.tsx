@@ -45,7 +45,7 @@ export const MaxView: React.FC = () => {
   const [novoAlunoId, setNovoAlunoId] = useState(alunos[0]?.id || '');
   const [novoConsultorId, setNovoConsultorId] = useState(consultores[0]?.id || '');
   const [novoTipo, setNovoTipo] = useState<TipoSessao>('diagnostico_1h');
-  const [novaData, setNovaData] = useState('2026-10-16');
+  const [novaData, setNovaData] = useState(() => new Date().toISOString().split('T')[0]);
   const [novoInicio, setNovoInicio] = useState('14:00');
   const [novoFim, setNovoFim] = useState('15:00');
   const [novaSala, setNovaSala] = useState('Sala 204 - Bloco Empreendedorismo');
@@ -61,7 +61,7 @@ export const MaxView: React.FC = () => {
 
   // Modal Reagendamento
   const [reagendandoAgId, setReagendandoAgId] = useState<string | null>(null);
-  const [reagendarData, setReagendarData] = useState('2026-10-22');
+  const [reagendarData, setReagendarData] = useState(() => new Date().toISOString().split('T')[0]);
   const [reagendarInicio, setReagendarInicio] = useState('13:00');
   const [reagendarFim, setReagendarFim] = useState('14:00');
 
