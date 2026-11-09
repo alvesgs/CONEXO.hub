@@ -7,6 +7,28 @@ import {
 } from 'lucide-react';
 import { TipoSessao } from '../types';
 import { formatarDataAgenda } from '../utils/dateUtils';
+import { SearchableSelect } from '../components/SearchableSelect';
+
+const RAMOS_ATIVIDADE_OPCOES = [
+  'Alimentação / Gastronomia',
+  'Confeitaria & Panificação',
+  'Beleza & Estética (Cabelo, Barba, Unhas)',
+  'Moda, Vestuário & Confecção',
+  'Artesanato, Costura & Decoração',
+  'Comércio Varejista & Loja Física',
+  'Comércio Online / E-commerce',
+  'Serviços Gerais & Manutenção',
+  'Construção Civil & Reformas',
+  'Tecnologia, Informática & Web',
+  'Marketing Digital & Redes Sociais',
+  'Saúde, Fitness & Bem-Estar',
+  'Educação, Aulas & Treinamentos',
+  'Pet Care & Veterinária',
+  'Transporte, Logística & Entregas',
+  'Fotografia, Eventos & Festas',
+  'Consultoria & Serviços Administrativos',
+  'Outros / Diversos'
+];
 
 export const MaxView: React.FC = () => {
   const { 
@@ -742,12 +764,12 @@ export const MaxView: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Ramo de Atividade</label>
-                  <input
-                    type="text"
-                    placeholder="Ex: Alimentação"
+                  <SearchableSelect
                     value={ramoNovo}
-                    onChange={e => setRamoNovo(e.target.value)}
-                    className="w-full p-2 bg-slate-50 dark:bg-[#0D1117] border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-800 dark:text-slate-100"
+                    onChange={setRamoNovo}
+                    options={RAMOS_ATIVIDADE_OPCOES}
+                    placeholder="Selecione ou pesquise..."
+                    align="right"
                   />
                 </div>
               </div>
