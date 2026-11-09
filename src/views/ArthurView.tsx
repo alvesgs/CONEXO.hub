@@ -441,7 +441,7 @@ export const ArthurView: React.FC = () => {
               </div>
             ) : (
               <div className="mt-4 p-5 bg-slate-50 dark:bg-[#1E252E] rounded-xl text-center text-slate-600 dark:text-slate-300 text-xs">
-                Nenhum encontro agendado no momento. Escolha um mês, dia e horário no calendário abaixo para agendar sua reunião com a mentora Aline!
+                Nenhum encontro agendado. Selecione o mês, a data e o horário no calendário abaixo para agendar.
               </div>
             )}
 
@@ -524,12 +524,12 @@ export const ArthurView: React.FC = () => {
           <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
               <div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white font-['Montserrat'] flex items-center gap-2">
+                <h2 className="text-base font-bold text-slate-900 dark:text-white font-['Montserrat'] flex items-center gap-2">
                   <CalendarIcon className="w-5 h-5 text-[#004B8D] dark:text-[#A1D900]" />
-                  <span>Agendar Reunião com a Mentora Aline</span>
+                  <span>Agendar Mentoria</span>
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Escolha o mês, o dia e o horário desejado:
+                  Selecione o mês, a data e o horário desejado:
                 </p>
               </div>
 
@@ -542,10 +542,10 @@ export const ArthurView: React.FC = () => {
             <div>
               <div className="flex items-center justify-between gap-2 flex-wrap mb-2.5">
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide font-['Montserrat']">
-                  1. Escolha o Mês:
+                  1. Mês:
                 </label>
                 <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                  {diasDoMesAtual.length} datas disponíveis neste mês
+                  {diasDoMesAtual.length} datas disponíveis
                 </span>
               </div>
 
@@ -576,7 +576,7 @@ export const ArthurView: React.FC = () => {
             {/* Grid do Calendário: Seleção de Dia do Mês Escolhido */}
             <div>
               <label className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide block mb-2.5 font-['Montserrat']">
-                2. Escolha o Dia em {MESES_CONFIG.find(m => m.chave === mesSelecionado)?.nome}:
+                2. Data ({MESES_CONFIG.find(m => m.chave === mesSelecionado)?.nome}):
               </label>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
@@ -617,7 +617,7 @@ export const ArthurView: React.FC = () => {
             {/* Seleção de Horários Disponíveis */}
             <div>
               <label className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide block mb-2.5 font-['Montserrat']">
-                3. Escolha o Horário Disponível ({diaAtualObjeto.diaNum} de {diaAtualObjeto.mesNome}):
+                3. Horário ({diaAtualObjeto.diaNum} de {diaAtualObjeto.mesNome}):
               </label>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

@@ -87,22 +87,22 @@ export const AlineView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Banner de Identificação da Consultora */}
-      <div className="bg-[#004B8D] rounded-2xl p-6 text-white shadow-md border-b-4 border-[#A1D900] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-[#004B8D] rounded-2xl p-6 text-white shadow-sm border-b-4 border-[#A1D900] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2 text-[#A1D900] text-xs font-bold uppercase tracking-wider mb-1">
-            <span>Consultoria de Negócios & Mentoria Presencial</span>
+          <div className="flex items-center gap-2 text-[#A1D900] text-xs font-bold uppercase tracking-wider mb-1 font-['Montserrat']">
+            <span>Mentoria de Negócios</span>
             <span>•</span>
-            <span>Consultora: Aline Silva</span>
+            <span>Aline Silva</span>
           </div>
-          <h2 className="text-2xl font-bold font-['Montserrat']">Prontuário Digital Unificado & Grade Semanal</h2>
-          <p className="text-blue-100 text-sm mt-1 max-w-2xl font-['Inter']">
-            Adeus às fichas de papel e documentos soltos no OneDrive. Acesse o histórico completo do empreendedor em segundos e registre a evolução de cada encontro.
+          <h2 className="text-2xl font-bold font-['Montserrat']">Prontuário e Grade</h2>
+          <p className="text-blue-100/90 text-xs mt-1 font-['Inter']">
+            Acompanhamento do histórico de evolução, prontuários de mentoria e grade semanal.
           </p>
         </div>
 
-        <div className="bg-[#334195] border border-blue-400/30 rounded-xl px-4 py-2.5 text-xs text-white">
-          <div><strong>Turno Alocado:</strong> Tarde (13h às 17h)</div>
-          <div><strong>Sala:</strong> 204 - Bloco Empreendedorismo</div>
+        <div className="bg-[#334195] border border-blue-400/30 rounded-xl px-4 py-2 text-xs text-white">
+          <div><strong>Turno:</strong> 13h às 17h (Tarde)</div>
+          <div className="text-blue-200 text-[11px]">Sala 204 • Presencial</div>
         </div>
       </div>
 
@@ -243,10 +243,10 @@ export const AlineView: React.FC = () => {
                   <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
                     <h4 className="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2 font-['Montserrat']">
                       <PlusCircle className="w-5 h-5 text-emerald-600 dark:text-[#A1D900]" />
-                      <span>Registrar Sessão no Diário de Bordo</span>
+                      <span>Registrar Sessão no Prontuário</span>
                     </h4>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Preenchimento ágil durante ou logo após a mentoria para Arthur visualizar no painel dele.
+                      Registro de diagnóstico, orientações e tarefas combinadas na sessão.
                     </p>
                   </div>
 
@@ -335,10 +335,10 @@ export const AlineView: React.FC = () => {
                     <div className="flex justify-end">
                       <button
                         type="submit"
-                        className="btn-conex-neon text-xs px-6 py-2.5 rounded-full flex items-center gap-2 cursor-pointer shadow-sm"
+                        className="btn-conex-neon text-xs px-5 py-2.5 rounded-full flex items-center gap-1.5 cursor-pointer shadow-xs"
                       >
                         <CheckCircle2 className="w-4 h-4" />
-                        <span>Salvar Prontuário no Banco Cloud</span>
+                        <span>Salvar Prontuário</span>
                       </button>
                     </div>
                   </form>
@@ -358,13 +358,13 @@ export const AlineView: React.FC = () => {
         <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-xs">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-lg font-['Montserrat']">Minha Grade Semanal de Atendimento</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-300">
-                Turno das 13h às 17h. Verifique com antecedência quem já confirmou presença para planejar seus atendimentos.
+              <h3 className="font-bold text-slate-900 dark:text-white text-base font-['Montserrat']">Grade de Atendimentos</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Atendimentos agendados para o turno da tarde (13h às 17h).
               </p>
             </div>
             <div className="text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-[#A1D900] px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800">
-              Sala 204 - Bloco Empreendedorismo
+              Sala 204 • Bloco Empreendedorismo
             </div>
           </div>
 
@@ -458,9 +458,9 @@ export const AlineView: React.FC = () => {
       {activeTab === 'duvidas' && (
         <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-xs">
           <div>
-            <h3 className="font-bold text-slate-900 dark:text-white text-lg font-['Montserrat']">Canal Direto de Dúvidas dos Mentorados</h3>
+            <h3 className="font-bold text-slate-900 dark:text-white text-base font-['Montserrat']">Dúvidas dos Mentorados</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Acabe com os 15 dias de silêncio entre encontros. Responda aqui para destravar o aluno enquanto ele aplica os exercícios no comércio dele.
+              Perguntas e orientações enviadas pelos participantes entre os encontros presenciais.
             </p>
           </div>
 
@@ -506,10 +506,10 @@ export const AlineView: React.FC = () => {
                             responderDuvida(d.id, respostaTexto[d.id]);
                             setRespostaTexto({ ...respostaTexto, [d.id]: '' });
                           }}
-                          className="btn-conex-neon text-xs px-4 py-2 rounded-full flex items-center gap-1.5 cursor-pointer shadow-sm"
+                          className="btn-conex-neon text-xs px-4 py-2 rounded-full flex items-center gap-1.5 cursor-pointer shadow-xs"
                         >
                           <Send className="w-3.5 h-3.5" />
-                          <span>Enviar Orientação</span>
+                          <span>Enviar Resposta</span>
                         </button>
                       </div>
                     </div>
@@ -526,14 +526,14 @@ export const AlineView: React.FC = () => {
         <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-xs">
           <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-lg font-['Montserrat']">Biblioteca de Conteúdos & Modelos de Apoio</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white text-base font-['Montserrat']">Materiais e Modelos de Apoio</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Modelos, guias práticos e planilhas simples disponibilizados para os alunos utilizarem.
+                Planilhas, roteiros e guias disponibilizados aos participantes.
               </p>
             </div>
             <button
               onClick={() => setShowModalMaterial(true)}
-              className="btn-conex-neon px-4 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
+              className="btn-conex-neon px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <PlusCircle className="w-4 h-4" />
               <span>Adicionar Material</span>

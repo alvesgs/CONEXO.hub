@@ -130,30 +130,30 @@ export const MaxView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Banner de Identificação do Operador */}
-      <div className="bg-[#004B8D] rounded-2xl p-6 text-white shadow-md border-b-4 border-[#A1D900] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-[#004B8D] rounded-2xl p-6 text-white shadow-sm border-b-4 border-[#A1D900] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2 text-[#A1D900] text-xs font-bold uppercase tracking-wider mb-1">
-            <span>Posto de Atendimento e Recepção</span>
+          <div className="flex items-center gap-2 text-[#A1D900] text-xs font-bold uppercase tracking-wider mb-1 font-['Montserrat']">
+            <span>Recepção</span>
             <span>•</span>
-            <span>Operador Responsável: Max</span>
+            <span>Max Santos</span>
           </div>
-          <h2 className="text-2xl font-bold font-['Montserrat']">Painel de Controle da Grade e Assiduidade</h2>
-          <p className="text-blue-100 text-sm mt-1 max-w-2xl font-['Inter']">
-            Acabe com o quebra-cabeça das planilhas: agende em blocos protegidos, controle faltas com regra rígida e envie lembretes 24h sem perder histórico.
+          <h2 className="text-2xl font-bold font-['Montserrat']">Grade e Assiduidade</h2>
+          <p className="text-blue-100/90 text-xs mt-1 font-['Inter']">
+            Gestão operacional de agendamentos, confirmações de presença e controle de assiduidade.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => setShowModalNovoAluno(true)}
-            className="btn-conex-neon px-5 py-2.5 text-xs shadow-sm flex items-center gap-2 cursor-pointer"
+            className="btn-conex-neon px-4 py-2 text-xs shadow-xs flex items-center gap-1.5 cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
-            <span>Novo Aluno (Balcão)</span>
+            <span>Novo Aluno</span>
           </button>
           <button
             onClick={() => setShowModalAgendamento(true)}
-            className="btn-conex-primary px-5 py-2.5 text-xs shadow-sm flex items-center gap-2 cursor-pointer border border-white/20"
+            className="btn-conex-primary px-4 py-2 text-xs shadow-xs flex items-center gap-1.5 cursor-pointer border border-white/20"
           >
             <CalendarPlus className="w-4 h-4 text-[#A1D900]" />
             <span>Novo Agendamento</span>
@@ -161,80 +161,76 @@ export const MaxView: React.FC = () => {
         </div>
       </div>
 
-      {/* Cards de Métricas e Alertas Operacionais de Max */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300 flex items-center justify-center font-bold">
-            <Send className="w-6 h-6" />
+      {/* Cards de Métricas Operacionais */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300 flex items-center justify-center shrink-0">
+            <Send className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-2xl font-bold text-slate-800 dark:text-white">
+            <div className="text-2xl font-bold text-slate-900 dark:text-white font-['Montserrat']">
               {agendamentos.filter(a => !a.lembreteEnviado24h && a.status === 'agendado').length}
             </div>
-            <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Lembretes 24h a Enviar</div>
+            <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Lembretes Pendentes</div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300 flex items-center justify-center font-bold">
-            <AlertTriangle className="w-6 h-6" />
+        <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300 flex items-center justify-center shrink-0">
+            <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-2xl font-bold text-slate-800 dark:text-white">{alunosEmRisco.length}</div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-white font-['Montserrat']">{alunosEmRisco.length}</div>
             <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Alunos em Risco (1 Falta)</div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 flex items-center justify-center font-bold">
-            <ShieldAlert className="w-6 h-6" />
+        <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 flex items-center justify-center shrink-0">
+            <ShieldAlert className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-2xl font-bold text-slate-800 dark:text-white">{alunosDesligados.length}</div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-white font-['Montserrat']">{alunosDesligados.length}</div>
             <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Desligados por Regra</div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-[#A1D900] flex items-center justify-center font-bold">
-            <CheckCircle className="w-6 h-6" />
+        <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-[#A1D900] flex items-center justify-center shrink-0">
+            <CheckCircle className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-2xl font-bold text-slate-800 dark:text-white">
+            <div className="text-2xl font-bold text-slate-900 dark:text-white font-['Montserrat']">
               {agendamentos.filter(a => a.status === 'confirmado').length}
             </div>
-            <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Presenças Pré-Confirmadas</div>
+            <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Presenças Confirmadas</div>
           </div>
         </div>
       </div>
 
-      {/* Alerta Inteligente de Grade / Anti-Buraco de Horário */}
+      {/* Alerta de Grade */}
       {temBuracoPotencial && (
-        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 rounded-xl p-4 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
-          <div className="text-sm">
-            <strong className="text-amber-900 dark:text-amber-200 font-semibold">Alerta do Quebra-Cabeça da Grade:</strong>
-            <span className="text-amber-800 dark:text-amber-300 ml-1">
-              Existe um número ímpar de entrevistas de 1h marcadas para a consultora Aline ({slotsDe1h.length} entrevistas). 
-              Para evitar 1 hora ociosa não planejada no turno de 4h, case outra entrevista de 1h ou ajuste o horário para casar com uma mentoria de 2h.
-            </span>
-          </div>
+        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/80 rounded-xl p-3.5 flex items-center gap-2.5 text-xs text-amber-900 dark:text-amber-200">
+          <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+          <span>
+            <strong>Ajuste de Grade:</strong> Há {slotsDe1h.length} entrevista(s) de 1h agendada(s) para Aline. Ajuste os horários para evitar intervalos ociosos no turno.
+          </span>
         </div>
       )}
 
-      {/* Conteúdo da Aba Selecionada na Barra Lateral */}
+      {/* Conteúdo da Aba Selecionada */}
       {/* ABA 1: GRADE DE ATENDIMENTOS & PRESENÇA */}
       {activeTab === 'agenda' && (
         <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
-          <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-50/50 dark:bg-[#1E252E]">
+          <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-50/50 dark:bg-[#1E252E]">
             <div>
-              <h3 className="font-bold text-slate-800 dark:text-white text-base font-['Montserrat']">Atendimentos Registrados no Sistema</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Regra rígida: Cancelamento com menos de 24h = 1 Falta. Limite: 2 Faltas ou 3 Reagendamentos = Desligamento.
+              <h3 className="font-bold text-slate-900 dark:text-white text-sm font-['Montserrat']">Grade de Atendimentos</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Cancelamento &lt; 24h contabiliza falta • Limite: 2 faltas ou 3 reagendamentos
               </p>
             </div>
-            <div className="text-xs font-semibold text-slate-500 dark:text-slate-300 bg-white dark:bg-[#161B22] px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
-              Turnos Padrão: 13h às 17h (Aline) • 08h às 12h (Regis)
+            <div className="text-[11px] font-medium text-slate-500 dark:text-slate-300 bg-white dark:bg-[#161B22] px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700">
+              Turnos: 13h–17h (Aline) • 08h–12h (Regis)
             </div>
           </div>
 
@@ -402,39 +398,41 @@ export const MaxView: React.FC = () => {
       {activeTab === 'lembretes' && (
         <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-xs">
           <div>
-            <h3 className="text-lg font-bold text-slate-800 dark:text-white font-['Montserrat']">Automação de Lembretes 24 Horas Antes</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Max não precisa mais digitar mensagens no celular do zero! Clique no botão para disparar o aviso formatado via WhatsApp e registrar a data de envio na nuvem.
+            <h3 className="text-base font-bold text-slate-900 dark:text-white font-['Montserrat']">Lembretes de 24 Horas</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Notificação e confirmação de presença dos atendimentos das próximas 24h via WhatsApp.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             {agendamentosAmanha.map(ag => {
               const aluno = alunos.find(a => a.id === ag.alunoId);
               const consultor = consultores.find(c => c.id === ag.consultorId);
               const dataFormatada = new Date(ag.data + 'T12:00:00').toLocaleDateString('pt-BR');
 
               return (
-                <div key={ag.id} className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 bg-slate-50 dark:bg-[#1E252E] flex flex-col justify-between gap-3">
+                <div key={ag.id} className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 bg-slate-50/70 dark:bg-[#1E252E] flex flex-col justify-between gap-3">
                   <div>
                     <div className="flex justify-between items-start">
                       <div>
-                        <div className="font-bold text-slate-900 dark:text-white text-base font-['Montserrat']">{aluno?.nome}</div>
+                        <div className="font-bold text-slate-900 dark:text-white text-sm font-['Montserrat']">{aluno?.nome}</div>
                         <div className="text-xs text-slate-500 dark:text-slate-400">{aluno?.negocio} • Tel: {aluno?.whatsapp}</div>
                       </div>
-                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                         ag.lembreteEnviado24h 
                           ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-[#A1D900] border border-emerald-200 dark:border-emerald-800' 
                           : 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
                       }`}>
-                        {ag.lembreteEnviado24h ? 'Lembrete Enviado' : 'Aviso Pendente'}
+                        {ag.lembreteEnviado24h ? 'Enviado' : 'Pendente'}
                       </span>
                     </div>
 
-                    <div className="mt-3 bg-white dark:bg-[#161B22] p-3 rounded-lg border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 font-mono space-y-1">
-                      <div><strong>Data:</strong> {dataFormatada} às {ag.horarioInicio}</div>
+                    <div className="mt-2.5 bg-white dark:bg-[#161B22] p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 space-y-1">
+                      <div className="flex justify-between">
+                        <span><strong>Data:</strong> {dataFormatada} às {ag.horarioInicio}</span>
+                        <span className="text-slate-400 font-mono text-[11px]">{ag.tipo === 'diagnostico_1h' ? '1h' : '2h'}</span>
+                      </div>
                       <div><strong>Consultora:</strong> {consultor?.nome} ({ag.sala})</div>
-                      <div><strong>Tipo:</strong> {ag.tipo === 'diagnostico_1h' ? 'Diagnóstico Inicial (1h)' : 'Mentoria de Negócios (2h)'}</div>
                     </div>
                   </div>
 
@@ -447,7 +445,7 @@ export const MaxView: React.FC = () => {
                       className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <Phone className="w-3.5 h-3.5" />
-                      <span>{ag.lembreteEnviado24h ? 'Reenviar WhatsApp' : 'Disparar Lembrete WhatsApp'}</span>
+                      <span>{ag.lembreteEnviado24h ? 'Reenviar WhatsApp' : 'Enviar Lembrete'}</span>
                     </button>
                     {ag.status !== 'confirmado' && (
                       <button
@@ -455,7 +453,7 @@ export const MaxView: React.FC = () => {
                         className="bg-white dark:bg-[#161B22] border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-[#252D37] text-slate-700 dark:text-slate-200 font-medium text-xs py-2 px-3 rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
                       >
                         <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-[#A1D900]" />
-                        <span>Confirmou</span>
+                        <span>Confirmar</span>
                       </button>
                     )}
                   </div>
@@ -471,9 +469,9 @@ export const MaxView: React.FC = () => {
         <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-xs">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white font-['Montserrat']">Empreendedores Cadastrados no Co.Nexo</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white font-['Montserrat']">Empreendedores Cadastrados</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Acompanhe o funil de cada participante e consulte faltas/reagendamentos antes de agendar.
+                Lista de participantes e controle de faltas e reagendamentos.
               </p>
             </div>
             <div className="relative w-full sm:w-64">
@@ -706,8 +704,8 @@ export const MaxView: React.FC = () => {
           <div className="bg-white dark:bg-[#161B22] border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
             <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
               <div>
-                <h3 className="font-bold text-slate-900 dark:text-white text-lg font-['Montserrat']">Cadastro Rápido de Balcão</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Sem fichas de papel ou cópia manual do RD Station</p>
+                <h3 className="font-bold text-slate-900 dark:text-white text-base font-['Montserrat']">Novo Cadastro</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Cadastro presencial no balcão de atendimento</p>
               </div>
               <button 
                 onClick={() => setShowModalNovoAluno(false)}
@@ -811,7 +809,7 @@ export const MaxView: React.FC = () => {
               </button>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Lembrete: Cada reagendamento é contabilizado. O limite rígido é de 3 reagendamentos.
+              Limite: até 3 reagendamentos por participante.
             </p>
 
             <div className="space-y-2 text-sm">

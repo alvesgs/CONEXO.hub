@@ -81,33 +81,33 @@ export const RegisView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Banner da Coordenação */}
-      <div className="bg-[#004B8D] rounded-2xl p-6 text-white shadow-md border-b-4 border-[#A1D900] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-[#004B8D] rounded-2xl p-6 text-white shadow-sm border-b-4 border-[#A1D900] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <div className="flex items-center gap-2 text-[#A1D900] text-xs font-bold uppercase tracking-wider mb-1">
-            <span>Coordenação Geral Co.Nexo</span>
+          <div className="flex items-center gap-2 text-[#A1D900] text-xs font-bold uppercase tracking-wider mb-1 font-['Montserrat']">
+            <span>Gestão Geral</span>
             <span>•</span>
-            <span>Coordenador: Regis Santos</span>
+            <span>Regis Santos</span>
           </div>
-          <h2 className="text-2xl font-bold font-['Montserrat']">Painel Executivo & Prestação de Contas Diretoria</h2>
-          <p className="text-blue-100 text-sm mt-1 max-w-2xl font-['Inter']">
-            Dados em tempo real com auditoria contínua na nuvem. Nunca mais perca um mês de registros ou passe dias cruzando planilhas manuais.
+          <h2 className="text-2xl font-bold font-['Montserrat']">Painel Executivo</h2>
+          <p className="text-blue-100/90 text-xs mt-1 font-['Inter']">
+            Indicadores estratégicos, evolução do funil e prestação de contas do programa.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={exportarRelatorioCsv}
-            className="btn-conex-neon px-4 py-2.5 text-xs shadow-sm flex items-center gap-2 cursor-pointer"
+            className="btn-conex-neon px-4 py-2 text-xs shadow-xs flex items-center gap-1.5 cursor-pointer"
           >
             <FileSpreadsheet className="w-4 h-4 text-[#1A1A1A]" />
-            <span>Exportar Relatório Excel/CSV</span>
+            <span>Exportar CSV</span>
           </button>
           <button
             onClick={exportarBackupCloud}
-            className="btn-conex-primary px-4 py-2.5 text-xs shadow-sm flex items-center gap-2 cursor-pointer border border-white/20"
+            className="btn-conex-primary px-4 py-2 text-xs shadow-xs flex items-center gap-1.5 cursor-pointer border border-white/20"
           >
             <Download className="w-4 h-4 text-[#A1D900]" />
-            <span>Backup do Banco (JSON)</span>
+            <span>Backup JSON</span>
           </button>
         </div>
       </div>
@@ -115,71 +115,71 @@ export const RegisView: React.FC = () => {
       {/* ABA 1: DASHBOARD EXECUTIVO & KPIS */}
       {(activeTab === 'kpis' || !activeTab) && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
             {/* KPI 1: MEIs Formalizados */}
-            <div className="bg-white dark:bg-[#161B22] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
               <div className="flex justify-between items-start">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  1. MEIs Formalizados
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                  MEIs Formalizados
                 </span>
-                <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center font-bold">
-                  <Award className="w-5 h-5" />
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-[#A1D900] flex items-center justify-center font-bold">
+                  <Award className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-3xl font-extrabold text-slate-900 dark:text-white mt-2 font-['Montserrat']">{totalMeisAbertos}</div>
-              <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                <span className="text-emerald-600 font-bold">+{totalMeisEmProcesso}</span>
-                <span>em processo de formalização</span>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{totalMeisAbertos}</div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
+                <span className="text-emerald-600 dark:text-[#A1D900] font-semibold">+{totalMeisEmProcesso}</span>
+                <span>em formalização</span>
               </div>
             </div>
 
             {/* KPI 2: Horas de Mentoria Executadas */}
-            <div className="bg-white dark:bg-[#161B22] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
               <div className="flex justify-between items-start">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  2. Horas Presenciais
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                  Horas Executadas
                 </span>
-                <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-[#004B8D] dark:text-blue-300 flex items-center justify-center font-bold">
-                  <Clock className="w-5 h-5" />
+                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-[#004B8D] dark:text-blue-300 flex items-center justify-center font-bold">
+                  <Clock className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-3xl font-extrabold text-slate-900 dark:text-white mt-2 font-['Montserrat']">{totalHorasExecutadas}h</div>
-              <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                <span className="text-[#004B8D] dark:text-blue-300 font-bold">{agendamentosRealizados.length} sessões</span>
-                <span>realizadas com sucesso</span>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{totalHorasExecutadas}h</div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
+                <span className="text-[#004B8D] dark:text-blue-300 font-semibold">{agendamentosRealizados.length}</span>
+                <span>sessões realizadas</span>
               </div>
             </div>
 
             {/* KPI 3: Taxa de No-Show */}
-            <div className="bg-white dark:bg-[#161B22] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
               <div className="flex justify-between items-start">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  3. Taxa de No-Show
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                  Taxa de No-Show
                 </span>
-                <div className="w-9 h-9 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center font-bold">
-                  <TrendingUp className="w-5 h-5" />
+                <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300 flex items-center justify-center font-bold">
+                  <TrendingUp className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-3xl font-extrabold text-slate-900 dark:text-white mt-2 font-['Montserrat']">{taxaNoShow}%</div>
-              <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                <span className="text-emerald-600 font-bold">{taxaAssiduidade}%</span>
-                <span>assiduidade geral</span>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{taxaNoShow}%</div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
+                <span className="text-emerald-600 dark:text-[#A1D900] font-semibold">{taxaAssiduidade}%</span>
+                <span>assiduidade</span>
               </div>
             </div>
 
             {/* KPI 4: Base Total de Alunos */}
-            <div className="bg-white dark:bg-[#161B22] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div className="bg-white dark:bg-[#161B22] p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
               <div className="flex justify-between items-start">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  4. Base de Alunos
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                  Participantes
                 </span>
-                <div className="w-9 h-9 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-600 flex items-center justify-center font-bold">
-                  <BarChart3 className="w-5 h-5" />
+                <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-300 flex items-center justify-center font-bold">
+                  <BarChart3 className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-3xl font-extrabold text-slate-900 dark:text-white mt-2 font-['Montserrat']">{alunos.length}</div>
-              <div className="text-xs text-slate-500 mt-1">
-                Empreendedores cadastrados no banco
+              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1.5 font-['Montserrat']">{alunos.length}</div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                Alunos na base
               </div>
             </div>
           </div>
@@ -189,46 +189,44 @@ export const RegisView: React.FC = () => {
       {/* ABA 2: FUNIL DO PROGRAMA */}
       {activeTab === 'funil' && (
         <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4">
-          <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
-            <div>
-              <h3 className="font-bold text-slate-800 dark:text-white text-base font-['Montserrat']">
-                Funil de Evolução dos Empreendedores
-              </h3>
-              <p className="text-xs text-slate-500">
-                Acompanhamento etapa a etapa: da inscrição no balcão até a abertura definitiva do CNPJ.
-              </p>
-            </div>
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 className="font-bold text-slate-900 dark:text-white text-base font-['Montserrat']">
+              Funil de Evolução dos Participantes
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Acompanhamento de etapas: da inscrição à formalização MEI.
+            </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
-            <div className="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-center">
-              <div className="text-xs font-semibold text-slate-500">1. Inscrição & Triagem</div>
-              <div className="text-2xl font-bold text-slate-800 dark:text-white mt-1 font-['Montserrat']">{contagemFunil.inscritos}</div>
-              <div className="text-[11px] text-slate-400 mt-0.5">Diagnóstico pendente</div>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-1">
+            <div className="bg-slate-50 dark:bg-[#1E252E] p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 text-center">
+              <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">1. Inscrição</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1 font-['Montserrat']">{contagemFunil.inscritos}</div>
+              <div className="text-[10px] text-slate-400 mt-0.5">Diagnóstico pendente</div>
             </div>
 
-            <div className="bg-amber-50/70 dark:bg-amber-950/30 p-4 rounded-xl border border-amber-200 dark:border-amber-800 text-center">
-              <div className="text-xs font-semibold text-amber-800 dark:text-amber-300">2. Em Mentoria (1 a 5)</div>
+            <div className="bg-amber-50/70 dark:bg-amber-950/30 p-3.5 rounded-xl border border-amber-200 dark:border-amber-800/80 text-center">
+              <div className="text-xs font-semibold text-amber-800 dark:text-amber-300">2. Em Mentoria</div>
               <div className="text-2xl font-bold text-amber-900 dark:text-amber-200 mt-1 font-['Montserrat']">{contagemFunil.emTrilha}</div>
-              <div className="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5">Frequência ativa</div>
+              <div className="text-[10px] text-amber-700 dark:text-amber-400 mt-0.5">Frequência ativa</div>
             </div>
 
-            <div className="bg-blue-50/70 dark:bg-blue-950/30 p-4 rounded-xl border border-blue-200 dark:border-blue-800 text-center">
-              <div className="text-xs font-semibold text-blue-800 dark:text-blue-300">3. Trilha Concluída</div>
+            <div className="bg-blue-50/70 dark:bg-blue-950/30 p-3.5 rounded-xl border border-blue-200 dark:border-blue-800/80 text-center">
+              <div className="text-xs font-semibold text-blue-800 dark:text-blue-300">3. Concluído</div>
               <div className="text-2xl font-bold text-blue-900 dark:text-blue-200 mt-1 font-['Montserrat']">{contagemFunil.concluidos}</div>
-              <div className="text-[11px] text-blue-700 dark:text-blue-400 mt-0.5">5 encontros cumpridos</div>
+              <div className="text-[10px] text-blue-700 dark:text-blue-400 mt-0.5">5 encontros cumpridos</div>
             </div>
 
-            <div className="bg-emerald-50/70 dark:bg-emerald-950/30 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 text-center">
-              <div className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">4. MEI Formalizado</div>
-              <div className="text-2xl font-bold text-emerald-900 dark:text-emerald-200 mt-1 font-['Montserrat']">{contagemFunil.meiAberto}</div>
-              <div className="text-[11px] text-emerald-700 dark:text-emerald-400 mt-0.5">Meta atingida! 🎉</div>
+            <div className="bg-emerald-50/70 dark:bg-emerald-950/30 p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-800/80 text-center">
+              <div className="text-xs font-semibold text-emerald-800 dark:text-[#A1D900]">4. MEI Formalizado</div>
+              <div className="text-2xl font-bold text-emerald-900 dark:text-white mt-1 font-['Montserrat']">{contagemFunil.meiAberto}</div>
+              <div className="text-[10px] text-emerald-700 dark:text-[#A1D900] mt-0.5">CNPJ ativo</div>
             </div>
 
-            <div className="bg-rose-50/70 dark:bg-rose-950/30 p-4 rounded-xl border border-rose-200 dark:border-rose-800 text-center col-span-2 sm:col-span-1">
-              <div className="text-xs font-semibold text-rose-800 dark:text-rose-300">5. Evasão / Desligados</div>
+            <div className="bg-rose-50/70 dark:bg-rose-950/30 p-3.5 rounded-xl border border-rose-200 dark:border-rose-800/80 text-center col-span-2 sm:col-span-1">
+              <div className="text-xs font-semibold text-rose-800 dark:text-rose-300">5. Desligados</div>
               <div className="text-2xl font-bold text-rose-900 dark:text-rose-200 mt-1 font-['Montserrat']">{contagemFunil.desligados}</div>
-              <div className="text-[11px] text-rose-700 dark:text-rose-400 mt-0.5">&gt;=2 faltas ou 3 reagend.</div>
+              <div className="text-[10px] text-rose-700 dark:text-rose-400 mt-0.5">Limite atingido</div>
             </div>
           </div>
         </div>
@@ -241,28 +239,28 @@ export const RegisView: React.FC = () => {
           <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-3">
             <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-amber-600" />
-                <h3 className="font-bold text-slate-800 dark:text-white text-base font-['Montserrat']">Alerta Preventivo de Desligamento</h3>
+                <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                <h3 className="font-bold text-slate-900 dark:text-white text-base font-['Montserrat']">Alerta de Risco</h3>
               </div>
-              <span className="text-xs font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full">
-                {alunosRiscoPreventivo.length} no limite
+              <span className="text-xs font-bold text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-full border border-amber-200 dark:border-amber-800">
+                {alunosRiscoPreventivo.length} em risco
               </span>
             </div>
 
-            <p className="text-xs text-slate-500">
-              Regis pode intervir preventivamente antes de atingir o limite de faltas e reagendamentos.
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Participantes com 1 falta ou 2 reagendamentos registrados.
             </p>
 
-            <div className="space-y-2.5 pt-2">
+            <div className="space-y-2 pt-1">
               {alunosRiscoPreventivo.map(aluno => (
-                <div key={aluno.id} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-center text-xs">
+                <div key={aluno.id} className="p-3 bg-slate-50 dark:bg-[#1E252E] rounded-xl border border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs">
                   <div>
                     <div className="font-bold text-slate-900 dark:text-white">{aluno.nome} ({aluno.negocio})</div>
-                    <div className="text-slate-500 mt-0.5">
+                    <div className="text-slate-500 dark:text-slate-400 mt-0.5">
                       {aluno.totalFaltas} de 2 faltas • {aluno.totalReagendamentos} de 3 reagendamentos
                     </div>
                   </div>
-                  <span className="bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-semibold px-2 py-1 rounded-md">
+                  <span className="bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-semibold px-2 py-1 rounded-md text-[11px]">
                     Risco Crítico
                   </span>
                 </div>
@@ -277,24 +275,24 @@ export const RegisView: React.FC = () => {
           <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-3">
             <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <Award className="w-5 h-5 text-emerald-600" />
-                <h3 className="font-bold text-slate-800 dark:text-white text-base font-['Montserrat']">Fila Pós-Ciclo ("Anti-Limbo" MEI)</h3>
+                <Award className="w-5 h-5 text-emerald-600 dark:text-[#A1D900]" />
+                <h3 className="font-bold text-slate-900 dark:text-white text-base font-['Montserrat']">Fila Pós-Ciclo (MEI)</h3>
               </div>
               <span className="text-xs font-bold text-[#004B8D] dark:text-[#A1D900] bg-blue-100 dark:bg-blue-950 px-2.5 py-0.5 rounded-full">
                 Follow-up 30/60d
               </span>
             </div>
 
-            <p className="text-xs text-slate-500">
-              Elimina o abandono pós-5º encontro. Acompanhamento dos alunos concluídos para verificar a abertura de CNPJ.
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Acompanhamento de formalização MEI pós-conclusão da trilha.
             </p>
 
-            <div className="space-y-2.5 pt-2">
+            <div className="space-y-2 pt-1">
               {filaAntiLimbo.map(aluno => (
-                <div key={aluno.id} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs">
+                <div key={aluno.id} className="p-3 bg-slate-50 dark:bg-[#1E252E] rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs">
                   <div>
                     <div className="font-bold text-slate-900 dark:text-white">{aluno.nome}</div>
-                    <div className="text-slate-500">
+                    <div className="text-slate-500 dark:text-slate-400">
                       Concluiu em: {aluno.dataConclusao || 'Ciclo recente'} • Status: <strong>{aluno.statusMei}</strong>
                     </div>
                   </div>
@@ -305,7 +303,7 @@ export const RegisView: React.FC = () => {
                         onClick={() => atualizarStatusMei(aluno.id, 'MEI Aberto e Ativo')}
                         className="btn-conex-neon text-xs px-3 py-1 cursor-pointer shadow-xs"
                       >
-                        Formalizou MEI 🎉
+                        Formalizou MEI
                       </button>
                     ) : (
                       <span className="text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-md border border-emerald-200 dark:border-emerald-800">
@@ -326,32 +324,31 @@ export const RegisView: React.FC = () => {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5">
               <Database className="w-5 h-5 text-[#A1D900]" />
-              <h3 className="font-bold text-white text-base font-['Montserrat']">Central de Segurança, Nuvem e Auditoria de Dados</h3>
+              <h3 className="font-bold text-white text-base font-['Montserrat']">Segurança e Backup de Dados</h3>
             </div>
             <span className="text-[#A1D900] font-mono text-xs flex items-center gap-1.5">
               <CloudCheck className="w-4 h-4" />
-              Banco Ativo & Sincronizado
+              Banco Sincronizado
             </span>
           </div>
 
           <p className="text-xs text-slate-300 max-w-3xl leading-relaxed">
-            Para garantir que o desastre relatado de registros do Excel apagados <strong>nunca mais ocorra</strong>,
-            todos os agendamentos, presenças e diários de bordo são persistidos com integridade referencial. 
-            Você pode fazer download completo da base em formato JSON ou restaurar uma cópia de segurança a qualquer instante.
+            Armazenamento em nuvem com integridade referencial. Todos os agendamentos, presenças e prontuários estão protegidos.
+            Gere cópias de segurança em formato JSON ou restaure backups anteriores a qualquer momento.
           </p>
 
-          <div className="flex flex-wrap items-center gap-3 pt-2">
+          <div className="flex flex-wrap items-center gap-2.5 pt-1">
             <button
               onClick={exportarBackupCloud}
-              className="btn-conex-primary text-xs px-4 py-2 flex items-center gap-2 cursor-pointer border border-white/20"
+              className="btn-conex-primary text-xs px-4 py-2 flex items-center gap-1.5 cursor-pointer border border-white/20"
             >
               <Download className="w-4 h-4 text-[#A1D900]" />
-              <span>Fazer Backup em Nuvem Agora</span>
+              <span>Fazer Backup (JSON)</span>
             </button>
 
-            <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-4 py-2 rounded-full flex items-center gap-2 cursor-pointer transition-colors">
+            <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-4 py-2 rounded-full flex items-center gap-1.5 cursor-pointer transition-colors">
               <Upload className="w-4 h-4 text-slate-400" />
-              <span>Restaurar de Arquivo JSON</span>
+              <span>Restaurar JSON</span>
               <input
                 type="file"
                 accept=".json"
